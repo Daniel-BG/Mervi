@@ -1,11 +1,11 @@
 package com.mervi.view;
 
-import com.mervi.control.ColorMatrixCanvasController;
+import com.mervi.control.MatrixViewPaneController;
 import com.mervi.model.MatrixModel;
+import com.mervi.view.MatrixView;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -22,18 +22,19 @@ public class Window extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		window = primaryStage;
+		primaryStage.setResizable(true);
 		
 		//set canvas up 
 		//https://stackoverflow.com/questions/23449932/javafx-resize-canvas-when-screen-is-resized
 		int rows = 40, cols = 40;
 		
-		ColorMatrixCanvas cmc = new ColorMatrixCanvas();
-		ColorMatrixCanvasController cmcc = new ColorMatrixCanvasController();
+		MatrixView mvp = new MatrixView();
+		
+		MatrixViewPaneController cmcc = new MatrixViewPaneController();
 		MatrixModel mm = new MatrixModel(rows, cols);
 		
-		cmc.setController(cmcc);
 		cmcc.setModel(mm);
-		cmcc.setView(cmc);
+		cmcc.setView(mvp);
 		
 		/**
 		GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -43,7 +44,8 @@ public class Window extends Application {
 		
 		//layout
 		StackPane layout = new StackPane();
-		layout.getChildren().add(cmc);
+		layout.getChildren().addAll(mvp.getCanvas(), mvp.getSelector());
+		mvp.getSelector().toFront();
 		scene = new Scene(layout, 200, 200);	
 		
 		window.setScene(scene);

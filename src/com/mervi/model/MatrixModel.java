@@ -49,12 +49,12 @@ public class MatrixModel {
 	}
 
 
-	public float getRows() {
+	public int getRows() {
 		return this.rows;
 	}
 
 
-	public float getCols() {
+	public int getCols() {
 		return this.cols;
 	}
 
