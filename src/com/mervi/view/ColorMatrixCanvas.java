@@ -1,5 +1,6 @@
 package com.mervi.view;
 
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -9,7 +10,7 @@ import javafx.scene.paint.Color;
  * paints each pixel according to the corresponding color <br>
  * It is also able to resize dynamically
  */
-public class ColorMatrixCanvas extends SelfResizingCanvas {
+public class ColorMatrixCanvas extends Canvas {
 	
 	//number of rows and columns currently drawn:
 	int rows, cols;
@@ -23,7 +24,7 @@ public class ColorMatrixCanvas extends SelfResizingCanvas {
 	 * @param green
 	 * @param blue
 	 */
-	public void paintMatrix(double[][] red, double[][] green, double[][] blue) {
+	public void paintMatrix(float[][] red, float[][] green, float[][] blue) {
 		
 		//assume red, green and blue are all rectangular and of the same size
 		this.rows = red.length;

@@ -1,9 +1,12 @@
 package com.mervi.control;
 
-import com.mervi.model.MatrixModel;
-import com.mervi.view.MatrixView;
-import com.mervi.view.events.SelfResizingCanvasEvent;
+import com.mervi.model.HyperspectralImageModel;
+import com.mervi.view.MatrixViewPane;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -12,33 +15,91 @@ import javafx.scene.input.MouseEvent;
  */
 public class MatrixViewPaneController {
 
-	private MatrixModel mm;
-
-	public void setModel(MatrixModel mm) {
-		this.mm = mm;
+	private HyperspectralImageModel him;
+	private MatrixViewPane mvp;
+	
+	private IntegerProperty selectedR = new SimpleIntegerProperty();
+	private IntegerProperty selectedG = new SimpleIntegerProperty();
+	private IntegerProperty selectedB = new SimpleIntegerProperty();
+	
+	public MatrixViewPaneController(HyperspectralImageModel him, MatrixViewPane mvp) {
+		this.him = him;
+		this.mvp = mvp;
+		selectedR.set(0);
+		selectedG.set(0);
+		selectedB.set(0);
+		this.setUp();
 	}
+	
 	
 	/**
 	 * Set up listeners for view events
-	 * @param mv
+	 * @param mvp
 	 */
-	public void setView(MatrixView mv) {
-		if (mm == null)
-			throw new IllegalStateException("Model must be set up prior to view");
-		
-		mv.getSelector().addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
-			double relxpos = e.getSceneX() / mv.getSelector().getWidth();
-			double relypos = e.getSceneY() / mv.getSelector().getHeight();
+	public void setUp() {
+		mvp.getSelector().addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
+			double relxpos = e.getSceneX() / mvp.getSelector().getWidth();
+			double relypos = e.getSceneY() / mvp.getSelector().getHeight();
 			
-			int realxpos = (int) (((float) mm.getRows()) * relxpos);
-			int realypos = (int) (((float) mm.getCols()) * relypos);
+			int realxpos = (int) (him.rowsProperty().floatValue() * relxpos);
+			int realypos = (int) (him.colsProperty().floatValue() * relypos);
 			
-			
-			mv.getSelector().overlayOn(realxpos, realypos);
+			mvp.getSelector().overlayOn(realxpos, realypos);
 		});
 		
-		mv.getCanvas().addEventHandler(SelfResizingCanvasEvent.RESIZE, e -> mv.getCanvas().paintMatrix(mm.getRed(), mm.getGreen(), mm.getBlue()));
-		mv.getSelector().addEventHandler(SelfResizingCanvasEvent.RESIZE, e -> mv.getSelector().setMatrixSize(mm.getRows(), mm.getCols()));
+		this.resizeSelectorOnChangeOf(him.colsProperty());
+		this.resizeSelectorOnChangeOf(him.rowsProperty());
+		
+		this.redrawOnChangeOf(this.selectedBProperty());
+		this.redrawOnChangeOf(this.selectedGProperty());
+		this.redrawOnChangeOf(this.selectedRProperty());
+		this.redrawOnChangeOf(mvp.widthProperty());
+		this.redrawOnChangeOf(mvp.heightProperty());
+		this.redrawOnChangeOf(him.modelChangedProperty());
+		
+		this.cleanSelectionOnChangeOf(mvp.widthProperty());
+		this.cleanSelectionOnChangeOf(mvp.heightProperty());
+		
+	}
+	
+	public void resizeSelectorOnChangeOf(ObservableValue<?> p) {
+		ChangeListener<Object> repaintListener = (observable, oldValue, newValue) -> {
+			mvp.getSelector().setMatrixSize(him.rowsProperty().intValue(), him.colsProperty().intValue());
+		};
+		
+		p.addListener(repaintListener);
+	}
+	
+	public void cleanSelectionOnChangeOf(ObservableValue<?> p) {
+		ChangeListener<Object> repaintListener = (observable, oldValue, newValue) -> {
+			mvp.getSelector().removeOverlay();
+		};
+		
+		p.addListener(repaintListener);
+	}
+	
+	public void redrawOnChangeOf(ObservableValue<?> p) {
+		ChangeListener<Object> repaintListener = (observable, oldValue, newValue) -> {
+			if (him.available())
+				mvp.getCanvas().paintMatrix(
+					him.getBand(selectedR.intValue()), 
+					him.getBand(selectedG.intValue()), 
+					him.getBand(selectedB.intValue()));
+		};
+		
+		p.addListener(repaintListener);
+	}
+	
+	public IntegerProperty selectedRProperty() {
+		return this.selectedR;
+	}
+	
+	public IntegerProperty selectedGProperty() {
+		return this.selectedG;
+	}
+	
+	public IntegerProperty selectedBProperty() {
+		return this.selectedB;
 	}
 
 }
