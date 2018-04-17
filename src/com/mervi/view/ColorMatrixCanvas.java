@@ -1,5 +1,7 @@
 package com.mervi.view;
 
+import com.mervi.model.ReadOnlyMatrix;
+
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -24,11 +26,13 @@ public class ColorMatrixCanvas extends Canvas {
 	 * @param green
 	 * @param blue
 	 */
-	public void paintMatrix(float[][] red, float[][] green, float[][] blue) {
+	public void paintMatrix(ReadOnlyMatrix red, ReadOnlyMatrix green, ReadOnlyMatrix blue) {
+		//size check
+		if (!red.sizeEquals(green) || !red.sizeEquals(blue))
+			throw new IllegalArgumentException("Matrices must be of the same size");
 		
-		//assume red, green and blue are all rectangular and of the same size
-		this.rows = red.length;
-		this.cols = red[0].length;
+		this.rows = red.getRows();
+		this.cols = red.getCols();
 		
 		GraphicsContext gc = this.getGraphicsContext2D();
 		double width = this.getWidth();
@@ -40,7 +44,7 @@ public class ColorMatrixCanvas extends Canvas {
 			for (int j = 0; j < cols; j++) {
 				this.paintSquare(
 						gc, 
-						new Color(red[i][j], green[i][j], blue[i][j], 1), 
+						new Color(red.get(i, j), green.get(i, j), blue.get(i, j), 1), 
 						i*sqrw, j*sqrh, sqrw, sqrh);
 			}
 		}

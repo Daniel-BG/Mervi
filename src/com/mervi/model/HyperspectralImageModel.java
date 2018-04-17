@@ -2,37 +2,25 @@ package com.mervi.model;
 
 import java.util.Random;
 
-import com.mervi.control.ObjectChangedProperty;
-
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-
-public class HyperspectralImageModel {
+public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 
 	private float[][][] values;
 	private float low = Float.MIN_VALUE, high = Float.MAX_VALUE;
 	
-	private IntegerProperty bands, rows, cols;
-	private ObjectChangedProperty modelChanged; //updated when the values change
 	
 	{
 		//this is used for colors that need to be between 0 and 1
 		//hence the range force
 		this.setRange(0.0f, 1.0f);
-		this.bands = new SimpleIntegerProperty();
-		this.rows = new SimpleIntegerProperty();
-		this.cols = new SimpleIntegerProperty();
-	
-		this.modelChanged = new ObjectChangedProperty();
 	}
 
 	
 	public void setSize(int bands, int rows, int cols) {
 		this.values = new float[bands][rows][cols];
-		this.bands.set(bands);
-		this.rows.set(rows);
-		this.cols.set(cols);
-		this.modelChanged.update();
+		this.bandsProperty().set(bands);
+		this.rowsProperty().set(rows);
+		this.colsProperty().set(cols);
+		this.modelChangedProperty().update();
 	}
 	
 	private void setRange(float low, float high) {
@@ -42,14 +30,14 @@ public class HyperspectralImageModel {
 	
 	public void randomize(long seed) {
 		Random r = new Random(seed);
-		for (int i = 0; i < bands.intValue(); i++) {
-			for (int j = 0; j < rows.intValue(); j++) {
-				for (int k = 0; k < cols.intValue(); k++) {
+		for (int i = 0; i < bandsProperty().intValue(); i++) {
+			for (int j = 0; j < rowsProperty().intValue(); j++) {
+				for (int k = 0; k < colsProperty().intValue(); k++) {
 					this.unsafeSetValue(i, j, k, r.nextFloat());
 				}
 			}
 		}
-		this.modelChanged.update();
+		modelChangedProperty().update();
 	}
 	
 	/**
@@ -67,7 +55,8 @@ public class HyperspectralImageModel {
 		this.values[band][row][col] = value;
 	}
 	
-	public float safeGetValue(int band, int row, int col) {
+	@Override
+	public float getValue(int band, int row, int col) {
 		checkBounds(band, row, col);
 		return unsafeGetValue(band, row, col);
 	}
@@ -78,7 +67,7 @@ public class HyperspectralImageModel {
 	
 	private void checkBounds(int band, int row, int col) {
 		if (band < 0 || row < 0 || col < 0 || 
-				band >= bands.intValue() || row >= rows.intValue() || col >= cols.intValue())
+				band >= bandsProperty().intValue() || row >= rowsProperty().intValue() || col >= colsProperty().intValue())
 			throw new IllegalArgumentException("Index out of bounds");
 	}
 	
@@ -87,27 +76,27 @@ public class HyperspectralImageModel {
 			throw new IllegalArgumentException("Value outside of default range");
 	}
 	
-	
-	public IntegerProperty rowsProperty() {
-		return this.rows;
-	}
-	
-	public IntegerProperty colsProperty() {
-		return this.cols;
-	}
-	
-	public IntegerProperty bandsProperty() {
-		return this.bands;
-	}
-	
-	public ObjectChangedProperty modelChangedProperty() {
-		return this.modelChanged;
-	}
-	
-	public float[][] getBand(int index) {
-		return this.values[index];
+	@Override
+	public ReadOnlyMatrix getBand(int index) {
+		return new ReadOnlyMatrix() {
+			@Override
+			public int getRows() {
+				return rowsProperty().intValue();
+			}
+
+			@Override
+			public int getCols() {
+				return colsProperty().intValue();
+			}
+
+			@Override
+			public float get(int row, int col) {
+				return getValue(index, row, col);
+			}
+		};
 	}
 
+	@Override
 	public boolean available() {
 		return values != null;
 	}

@@ -16,7 +16,7 @@ public class MatrixSelector extends Canvas {
 	
 	public void overlayOn(int xpos, int ypos) {
 		if (xpos < 0 || xpos > this.cols || ypos < 0 || ypos > this.rows)
-			throw new IllegalArgumentException("x and/or y out of bounds or MatrixSelector not initialized");
+			throw new IllegalArgumentException("x and/or y out of bounds or MatrixSelector not initialized" + xpos + "," + ypos + "," + this.rows + "," + this.cols);
 		
 		this.removeOverlay();
 		

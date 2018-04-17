@@ -1,5 +1,6 @@
 package com.mervi.control;
 
+import com.mervi.model.AbstractHyperspectralImageModel;
 import com.mervi.model.HyperspectralImageModel;
 import com.mervi.view.MatrixViewPane;
 
@@ -15,14 +16,14 @@ import javafx.scene.input.MouseEvent;
  */
 public class MatrixViewPaneController {
 
-	private HyperspectralImageModel him;
+	private AbstractHyperspectralImageModel him;
 	private MatrixViewPane mvp;
 	
 	private IntegerProperty selectedR = new SimpleIntegerProperty();
 	private IntegerProperty selectedG = new SimpleIntegerProperty();
 	private IntegerProperty selectedB = new SimpleIntegerProperty();
 	
-	public MatrixViewPaneController(HyperspectralImageModel him, MatrixViewPane mvp) {
+	public MatrixViewPaneController(AbstractHyperspectralImageModel him, MatrixViewPane mvp) {
 		this.him = him;
 		this.mvp = mvp;
 		selectedR.set(0);

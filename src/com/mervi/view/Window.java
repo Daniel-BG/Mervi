@@ -2,10 +2,11 @@ package com.mervi.view;
 
 
 import com.mervi.control.MatrixViewPaneController;
+import com.mervi.model.HyperspectralDiffModel;
 import com.mervi.model.HyperspectralImageModel;
 
 import javafx.application.Application;
-import javafx.event.Event;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,6 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 
 public class Window extends Application {
@@ -32,7 +34,9 @@ public class Window extends Application {
 		window.setResizable(true);
 		
 		//create model to be filled up
-		HyperspectralImageModel him = new HyperspectralImageModel();
+		HyperspectralImageModel himOrig = new HyperspectralImageModel();
+		HyperspectralImageModel himComp = new HyperspectralImageModel();
+		
 		
 		
 		//set canvas up 
@@ -69,7 +73,7 @@ public class Window extends Application {
         labelGreen.setMinWidth(40);
 		final Spinner<Integer> spinnerGreen = new Spinner<Integer>();
         
-		him.bandsProperty().addListener((observable, oldVal, newVal) -> {
+		himComp.bandsProperty().addListener((observable, oldVal, newVal) -> {
 			SpinnerValueFactory<Integer> valueFactoryRed = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
 			SpinnerValueFactory<Integer> valueFactoryGreen = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
 			SpinnerValueFactory<Integer> valueFactoryBlue = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
@@ -116,21 +120,56 @@ public class Window extends Application {
 		window.setTitle("test");
 		window.show();
 		
+		window.setOnCloseRequest(new EventHandler<WindowEvent>() {
+		    @Override
+		    public void handle(WindowEvent event) {
+		        Platform.exit();
+		    }
+		});
+		
 		
 		/** this creates one view */
 		int bands = 40, rows = 40, cols = 40;
-		MatrixViewPane mvp = new MatrixViewPane();
-		MatrixViewPaneController mvpc = new MatrixViewPaneController(him, mvp);
-		mvpc.selectedRProperty().bind(spinnerRed.valueProperty());
-		mvpc.selectedGProperty().bind(spinnerGreen.valueProperty());
-		mvpc.selectedBProperty().bind(spinnerBlue.valueProperty());
+		MatrixViewPane mvpOrig = new MatrixViewPane();
+		MatrixViewPaneController mvpcOrig = new MatrixViewPaneController(himOrig, mvpOrig);
+		mvpcOrig.selectedRProperty().bind(spinnerRed.valueProperty());
+		mvpcOrig.selectedGProperty().bind(spinnerGreen.valueProperty());
+		mvpcOrig.selectedBProperty().bind(spinnerBlue.valueProperty());
 		
-		MatrixViewStage mvs = new MatrixViewStage(mvp);
-		him.setSize(bands, rows, cols);
-		him.randomize(0);
+		MatrixViewStage mvsOrig = new MatrixViewStage(mvpOrig);
+		himOrig.setSize(bands, rows, cols);
+		himOrig.randomize(0);
 		
-		mvs.show();
+		mvsOrig.show();
 		/*************************/
+		
+		/** and another one */
+		MatrixViewPane mvpComp = new MatrixViewPane();
+		MatrixViewPaneController mvpcComp = new MatrixViewPaneController(himComp, mvpComp);
+		mvpcComp.selectedRProperty().bind(spinnerRed.valueProperty());
+		mvpcComp.selectedGProperty().bind(spinnerGreen.valueProperty());
+		mvpcComp.selectedBProperty().bind(spinnerBlue.valueProperty());
+		
+		MatrixViewStage mvsComp = new MatrixViewStage(mvpComp);
+		himComp.setSize(bands, rows, cols);
+		himComp.randomize(1);
+		
+		mvsComp.show();
+		/**************************/
+		
+		
+		/** and another one */
+		HyperspectralDiffModel hdm = new HyperspectralDiffModel();
+		MatrixViewPane mvpDiff = new MatrixViewPane();
+		MatrixViewPaneController mvpcDiff = new MatrixViewPaneController(hdm, mvpDiff);
+		mvpcDiff.selectedRProperty().bind(spinnerRed.valueProperty());
+		mvpcDiff.selectedGProperty().bind(spinnerGreen.valueProperty());
+		mvpcDiff.selectedBProperty().bind(spinnerBlue.valueProperty());
+		
+		MatrixViewStage mvsDiff = new MatrixViewStage(mvpDiff);
+		hdm.setSources(himOrig, himComp);
+		mvsDiff.show();
+		/**************************/
 		
 		
 
