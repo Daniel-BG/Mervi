@@ -34,7 +34,9 @@ public abstract class AbstractHyperspectralImageModel {
 		return this.modelChanged;
 	}
 	
-	public abstract float getValue(int band, int row, int col);
+	public abstract int getValue(int band, int row, int col);
+	
+	public abstract int getRange();
 	
 	public abstract ReadOnlyMatrix getBand(int index);
 	

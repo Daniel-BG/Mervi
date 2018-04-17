@@ -38,6 +38,7 @@ public class Window extends Application {
 		MousePosition mp = new MousePosition();
 		HyperspectralImageModel himOrig = new HyperspectralImageModel();
 		HyperspectralImageModel himComp = new HyperspectralImageModel();
+		HyperspectralDiffModel hdm = new HyperspectralDiffModel();
 		
 		
 		
@@ -75,7 +76,7 @@ public class Window extends Application {
         labelGreen.setMinWidth(40);
 		final Spinner<Integer> spinnerGreen = new Spinner<Integer>();
         
-		himComp.bandsProperty().addListener((observable, oldVal, newVal) -> {
+		himOrig.bandsProperty().addListener((observable, oldVal, newVal) -> {
 			SpinnerValueFactory<Integer> valueFactoryRed = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
 			SpinnerValueFactory<Integer> valueFactoryGreen = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
 			SpinnerValueFactory<Integer> valueFactoryBlue = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
@@ -110,10 +111,17 @@ public class Window extends Application {
         
         bandSelector.getChildren().addAll(labelRed, spinnerRed, labelBlue, spinnerBlue, labelGreen, spinnerGreen);
         
+        
+        /** Bit viewer for the original image */
+        HBox bvbox = new HBox();
+        Label origBits = new Label("Original value: ");
+        IntegerBinaryViewer ibvOrig = new IntegerBinaryViewer(16);
+        bvbox.getChildren().addAll(origBits, ibvOrig);
+        
 		
 		/** Putting all things together */
 		VBox vbox = new VBox();
-		vbox.getChildren().addAll(originalHBox, compressedHBox, bandSelector);
+		vbox.getChildren().addAll(originalHBox, compressedHBox, bandSelector, bvbox);
 		
 		
 		/** Create and show the scene */
@@ -131,14 +139,14 @@ public class Window extends Application {
 		
 		
 		/** this creates one view */
-		int bands = 40, rows = 40, cols = 40;
+		int bands = 30, rows = 40, cols = 60;
 		MatrixViewPane mvpOrig = new MatrixViewPane();
 		MatrixViewPaneController mvpcOrig = new MatrixViewPaneController(himOrig, mvpOrig, mp);
 		mvpcOrig.selectedRProperty().bind(spinnerRed.valueProperty());
 		mvpcOrig.selectedGProperty().bind(spinnerGreen.valueProperty());
 		mvpcOrig.selectedBProperty().bind(spinnerBlue.valueProperty());
 		
-		MatrixViewStage mvsOrig = new MatrixViewStage(mvpOrig);
+		MatrixViewStage mvsOrig = new MatrixViewStage(mvpOrig, "Original");
 		himOrig.setSize(bands, rows, cols);
 		himOrig.randomize(0);
 		
@@ -152,7 +160,7 @@ public class Window extends Application {
 		mvpcComp.selectedGProperty().bind(spinnerGreen.valueProperty());
 		mvpcComp.selectedBProperty().bind(spinnerBlue.valueProperty());
 		
-		MatrixViewStage mvsComp = new MatrixViewStage(mvpComp);
+		MatrixViewStage mvsComp = new MatrixViewStage(mvpComp, "Compressed");
 		himComp.setSize(bands, rows, cols);
 		himComp.randomize(1);
 		
@@ -161,18 +169,20 @@ public class Window extends Application {
 		
 		
 		/** and another one */
-		HyperspectralDiffModel hdm = new HyperspectralDiffModel();
 		MatrixViewPane mvpDiff = new MatrixViewPane();
 		MatrixViewPaneController mvpcDiff = new MatrixViewPaneController(hdm, mvpDiff, mp);
 		mvpcDiff.selectedRProperty().bind(spinnerRed.valueProperty());
 		mvpcDiff.selectedGProperty().bind(spinnerGreen.valueProperty());
 		mvpcDiff.selectedBProperty().bind(spinnerBlue.valueProperty());
 		
-		MatrixViewStage mvsDiff = new MatrixViewStage(mvpDiff);
+		MatrixViewStage mvsDiff = new MatrixViewStage(mvpDiff, "Difference");
 		hdm.setSources(himOrig, himComp);
 		mvsDiff.show();
 		/**************************/
 		
+		
+		/** bind viewers */
+		ibvOrig.integerValueProperty().bind(mvpcOrig.selectedRValueProperty());
 		
 
 	}

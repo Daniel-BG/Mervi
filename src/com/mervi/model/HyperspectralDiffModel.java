@@ -20,8 +20,8 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 	}
 
 	@Override
-	public float getValue(int band, int row, int col) {
-		return source1.getValue(band, row, col) - source2.getValue(band, row, col);
+	public int getValue(int band, int row, int col) {
+		return Math.abs(source1.getValue(band, row, col) - source2.getValue(band, row, col));
 	}
 
 	@Override
@@ -29,7 +29,8 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 		//check dimensions
 		if (source1.bandsProperty().getValue() != source2.bandsProperty().getValue() ||
 			source1.rowsProperty().getValue() != source2.rowsProperty().getValue() ||
-			source1.colsProperty().getValue() != source2.colsProperty().getValue())
+			source1.colsProperty().getValue() != source2.colsProperty().getValue() ||
+			source1.getRange() != source2.getRange())
 			throw new IllegalStateException("Images cannot be of different sizes");
 		
 		return new ReadOnlyMatrix() {
@@ -45,10 +46,15 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 			}
 			
 			@Override
-			public float get(int row, int col) {
-				float val1 = source1.getBand(index).get(row, col);
-				float val2 = source2.getBand(index).get(row, col);
-				return (val1 - val2 + 1) / 2; //back in 0-1 range
+			public int get(int row, int col) {
+				int val1 = source1.getBand(index).get(row, col);
+				int val2 = source2.getBand(index).get(row, col);
+				return Math.abs(val1 - val2); //back in positive range
+			}
+
+			@Override
+			public int range() {
+				return source1.getRange();
 			}
 		};
 	}
@@ -56,6 +62,11 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 	@Override
 	public boolean available() {
 		return source1 != null && source2 != null && source1.available() && source2.available();
+	}
+
+	@Override
+	public int getRange() {
+		return source1.getRange();
 	}
 
 }

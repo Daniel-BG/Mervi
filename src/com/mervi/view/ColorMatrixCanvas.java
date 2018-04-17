@@ -14,8 +14,17 @@ import javafx.scene.paint.Color;
  */
 public class ColorMatrixCanvas extends Canvas {
 	
-	//number of rows and columns currently drawn:
-	int rows, cols;
+	private final NumberMatrix red = new NumberMatrix();
+	private final NumberMatrix green = new NumberMatrix();
+	private final NumberMatrix blue = new NumberMatrix();
+	
+	{
+		red.changedProperty().addListener(e -> redraw());
+		green.changedProperty().addListener(e -> redraw());
+		blue.changedProperty().addListener(e -> redraw());
+		this.widthProperty().addListener(e -> redraw());
+		this.heightProperty().addListener(e -> redraw());
+	}
 	
 	/**************/
 	/** Controls **/
@@ -26,13 +35,13 @@ public class ColorMatrixCanvas extends Canvas {
 	 * @param green
 	 * @param blue
 	 */
-	public void paintMatrix(ReadOnlyMatrix red, ReadOnlyMatrix green, ReadOnlyMatrix blue) {
+	private void redraw() {
 		//size check
 		if (!red.sizeEquals(green) || !red.sizeEquals(blue))
-			throw new IllegalArgumentException("Matrices must be of the same size");
+			return;
 		
-		this.rows = red.getRows();
-		this.cols = red.getCols();
+		int rows = red.rowsProperty().intValue();
+		int cols = red.colsProperty().intValue();
 		
 		GraphicsContext gc = this.getGraphicsContext2D();
 		double width = this.getWidth();
@@ -40,20 +49,36 @@ public class ColorMatrixCanvas extends Canvas {
 		double sqrw = width / (double) cols;
 		double sqrh = height / (double) rows;
 		
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
 				this.paintSquare(
 						gc, 
-						new Color(red.get(i, j), green.get(i, j), blue.get(i, j), 1), 
-						i*sqrw, j*sqrh, sqrw, sqrh);
+						new Color(
+								red.get(row, col).doubleValue(), 
+								green.get(row, col).doubleValue(), 
+								blue.get(row, col).doubleValue(), 
+								1), 
+						col*sqrw, row*sqrh, sqrw, sqrh);
 			}
 		}
 	}
+
 	
 	private void paintSquare(GraphicsContext gc, Color c, double x, double y, double w, double h) {
 		gc.setFill(c);
 		gc.fillRect(x, y, w, h);
 	}
 	/**************/
+	
+	public NumberMatrix getRedProperty() {
+		return this.red;
+	}
+	
+	public NumberMatrix getGreenProperty() {
+		return this.green;
+	}
 
+	public NumberMatrix getBlueProperty() {
+		return this.blue;
+	}
 }

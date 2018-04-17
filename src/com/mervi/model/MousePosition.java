@@ -5,15 +5,15 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 public class MousePosition {
 	
-	private final IntegerProperty xpos = new SimpleIntegerProperty();
-	private final IntegerProperty ypos = new SimpleIntegerProperty();
+	private final IntegerProperty col = new SimpleIntegerProperty();
+	private final IntegerProperty row = new SimpleIntegerProperty();
 	
-	public IntegerProperty xposProperty() {
-		return this.xpos;
+	public IntegerProperty colProperty() {
+		return this.col;
 	}
 	
-	public IntegerProperty yposProperty() {
-		return this.ypos;
+	public IntegerProperty rowProperty() {
+		return this.row;
 	}
 
 }

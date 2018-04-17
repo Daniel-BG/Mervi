@@ -4,10 +4,9 @@ import com.mervi.model.AbstractHyperspectralImageModel;
 import com.mervi.model.MousePosition;
 import com.mervi.view.MatrixViewPane;
 
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -20,17 +19,17 @@ public class MatrixViewPaneController {
 	private MatrixViewPane mvp;
 	private MousePosition mp;
 	
-	private IntegerProperty selectedR = new SimpleIntegerProperty();
-	private IntegerProperty selectedG = new SimpleIntegerProperty();
-	private IntegerProperty selectedB = new SimpleIntegerProperty();
+	private IntegerProperty selectedRIndex = new SimpleIntegerProperty(0);
+	private IntegerProperty selectedGIndex = new SimpleIntegerProperty(0);
+	private IntegerProperty selectedBIndex = new SimpleIntegerProperty(0);
+	private IntegerProperty selectedRValue = new SimpleIntegerProperty(0);
+	private IntegerProperty selectedGValue = new SimpleIntegerProperty(0);
+	private IntegerProperty selectedBValue = new SimpleIntegerProperty(0);
 	
 	public MatrixViewPaneController(AbstractHyperspectralImageModel him, MatrixViewPane mvp, MousePosition mp) {
 		this.him = him;
 		this.mvp = mvp;
 		this.mp = mp;
-		selectedR.set(0);
-		selectedG.set(0);
-		selectedB.set(0);
 		this.setUp();
 	}
 	
@@ -44,51 +43,68 @@ public class MatrixViewPaneController {
 			double relxpos = e.getSceneX() / mvp.getSelector().getWidth();
 			double relypos = e.getSceneY() / mvp.getSelector().getHeight();
 			
-			int realxpos = (int) (him.rowsProperty().floatValue() * relxpos);
-			int realypos = (int) (him.colsProperty().floatValue() * relypos);
+			int realxpos = (int) (him.colsProperty().floatValue() * relxpos);
+			int realypos = (int) (him.rowsProperty().floatValue() * relypos);
 			
-			mp.xposProperty().set(realxpos);
-			mp.yposProperty().set(realypos);
+			mp.colProperty().set(realxpos);
+			mp.rowProperty().set(realypos);
+			
 		});
+		
+		InvalidationListener il = e -> {
+			this.selectedRValue.set(him.getBand(this.selectedRProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
+			this.selectedGValue.set(him.getBand(this.selectedGProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
+			this.selectedBValue.set(him.getBand(this.selectedBProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
+		};
+		
+		mp.rowProperty().addListener(il);
+		mp.colProperty().addListener(il);
 		
 		mvp.getSelector().numRowsProperty().bind(him.rowsProperty());
 		mvp.getSelector().numColsProperty().bind(him.colsProperty());
-		mvp.getSelector().selectedColProperty().bind(mp.xposProperty());
-		mvp.getSelector().selectedRowProperty().bind(mp.yposProperty());
+		mvp.getSelector().selectedColProperty().bind(mp.colProperty());
+		mvp.getSelector().selectedRowProperty().bind(mp.rowProperty());
 		
+		this.selectedRProperty().addListener( (obs, oldval, newVal) ->
+			mvp.getCanvas().getRedProperty().set(him.getBand(newVal.intValue()))
+		);
+		this.selectedGProperty().addListener( (obs, oldval, newVal) ->
+			mvp.getCanvas().getGreenProperty().set(him.getBand(newVal.intValue()))
+		);
+		this.selectedBProperty().addListener( (obs, oldval, newVal) ->
+			mvp.getCanvas().getBlueProperty().set(him.getBand(newVal.intValue()))
+		);
 		
-		this.redrawOnChangeOf(this.selectedBProperty());
-		this.redrawOnChangeOf(this.selectedGProperty());
-		this.redrawOnChangeOf(this.selectedRProperty());
-		this.redrawOnChangeOf(mvp.widthProperty());
-		this.redrawOnChangeOf(mvp.heightProperty());
-		this.redrawOnChangeOf(him.modelChangedProperty());
+		him.modelChangedProperty().addListener(e -> {
+			mvp.getCanvas().getRedProperty().set(him.getBand(this.selectedRProperty().intValue()));
+			mvp.getCanvas().getGreenProperty().set(him.getBand(this.selectedGProperty().intValue()));
+			mvp.getCanvas().getBlueProperty().set(him.getBand(this.selectedBProperty().intValue()));
+		});
 		
-		
-	}
-	
-	public void redrawOnChangeOf(ObservableValue<?> p) {
-		ChangeListener<Object> repaintListener = (observable, oldValue, newValue) -> {
-			if (him.available())
-				mvp.getCanvas().paintMatrix(
-					him.getBand(selectedR.intValue()), 
-					him.getBand(selectedG.intValue()), 
-					him.getBand(selectedB.intValue()));
-		};
-		
-		p.addListener(repaintListener);
 	}
 	
 	public IntegerProperty selectedRProperty() {
-		return this.selectedR;
+		return this.selectedRIndex;
 	}
 	
 	public IntegerProperty selectedGProperty() {
-		return this.selectedG;
+		return this.selectedGIndex;
 	}
 	
 	public IntegerProperty selectedBProperty() {
-		return this.selectedB;
+		return this.selectedBIndex;
+	}
+	
+	public IntegerProperty selectedRValueProperty() {
+		return this.selectedRValue;
+	}
+	
+	public IntegerProperty selectedGValueProperty() {
+		return this.selectedGValue;
+	}
+	
+	public IntegerProperty selectedBValueProperty() {
+		return this.selectedBValue;
 	}
 
 }

@@ -4,28 +4,27 @@ import java.util.Random;
 
 public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 
-	private float[][][] values;
-	private float low = Float.MIN_VALUE, high = Float.MAX_VALUE;
+	private int[][][] values;
+	private int range = Integer.MAX_VALUE;
 	
 	
 	{
 		//this is used for colors that need to be between 0 and 1
 		//hence the range force
-		this.setRange(0.0f, 1.0f);
+		this.setRange(0x1 << 16);
 	}
 
 	
 	public void setSize(int bands, int rows, int cols) {
-		this.values = new float[bands][rows][cols];
+		this.values = new int[bands][rows][cols];
 		this.bandsProperty().set(bands);
 		this.rowsProperty().set(rows);
 		this.colsProperty().set(cols);
 		this.modelChangedProperty().update();
 	}
 	
-	private void setRange(float low, float high) {
-		this.low = low;
-		this.high = high;
+	private void setRange(int range) {
+		this.range = range;
 	}
 	
 	public void randomize(long seed) {
@@ -33,7 +32,7 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 		for (int i = 0; i < bandsProperty().intValue(); i++) {
 			for (int j = 0; j < rowsProperty().intValue(); j++) {
 				for (int k = 0; k < colsProperty().intValue(); k++) {
-					this.unsafeSetValue(i, j, k, r.nextFloat());
+					this.unsafeSetValue(i, j, k, r.nextInt(range));
 				}
 			}
 		}
@@ -45,23 +44,23 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 	 * Instead, update the whole matrix in a new function, using this only
 	 * as a helper. Same goes for unsafeSetValue
 	 */
-	private void safeSetValue(int band, int row, int col, float value) {
+	private void safeSetValue(int band, int row, int col, int value) {
 		checkBounds(band, row, col);
 		checkValue(value);
 		unsafeSetValue(band, row, col, value);
 	}
 	
-	private void unsafeSetValue(int band, int row, int col, float value) {
+	private void unsafeSetValue(int band, int row, int col, int value) {
 		this.values[band][row][col] = value;
 	}
 	
 	@Override
-	public float getValue(int band, int row, int col) {
+	public int getValue(int band, int row, int col) {
 		checkBounds(band, row, col);
 		return unsafeGetValue(band, row, col);
 	}
 	
-	private float unsafeGetValue(int band, int row, int col) {
+	private int unsafeGetValue(int band, int row, int col) {
 		return this.values[band][row][col];
 	}
 	
@@ -71,8 +70,8 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 			throw new IllegalArgumentException("Index out of bounds");
 	}
 	
-	private void checkValue(float value) {
-		if (value < low || value > high)
+	private void checkValue(int value) {
+		if (value < 0 || value > range)
 			throw new IllegalArgumentException("Value outside of default range");
 	}
 	
@@ -90,15 +89,24 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 			}
 
 			@Override
-			public float get(int row, int col) {
+			public int get(int row, int col) {
 				return getValue(index, row, col);
+			}
+
+			@Override
+			public int range() {
+				return range;
 			}
 		};
 	}
 
-	@Override
 	public boolean available() {
 		return values != null;
+	}
+
+	@Override
+	public int getRange() {
+		return range;
 	}
 	
 }
