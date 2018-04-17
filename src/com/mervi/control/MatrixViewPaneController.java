@@ -1,7 +1,7 @@
 package com.mervi.control;
 
 import com.mervi.model.AbstractHyperspectralImageModel;
-import com.mervi.model.HyperspectralImageModel;
+import com.mervi.model.MousePosition;
 import com.mervi.view.MatrixViewPane;
 
 import javafx.beans.property.IntegerProperty;
@@ -18,14 +18,16 @@ public class MatrixViewPaneController {
 
 	private AbstractHyperspectralImageModel him;
 	private MatrixViewPane mvp;
+	private MousePosition mp;
 	
 	private IntegerProperty selectedR = new SimpleIntegerProperty();
 	private IntegerProperty selectedG = new SimpleIntegerProperty();
 	private IntegerProperty selectedB = new SimpleIntegerProperty();
 	
-	public MatrixViewPaneController(AbstractHyperspectralImageModel him, MatrixViewPane mvp) {
+	public MatrixViewPaneController(AbstractHyperspectralImageModel him, MatrixViewPane mvp, MousePosition mp) {
 		this.him = him;
 		this.mvp = mvp;
+		this.mp = mp;
 		selectedR.set(0);
 		selectedG.set(0);
 		selectedB.set(0);
@@ -45,11 +47,15 @@ public class MatrixViewPaneController {
 			int realxpos = (int) (him.rowsProperty().floatValue() * relxpos);
 			int realypos = (int) (him.colsProperty().floatValue() * relypos);
 			
-			mvp.getSelector().overlayOn(realxpos, realypos);
+			mp.xposProperty().set(realxpos);
+			mp.yposProperty().set(realypos);
 		});
 		
-		this.resizeSelectorOnChangeOf(him.colsProperty());
-		this.resizeSelectorOnChangeOf(him.rowsProperty());
+		mvp.getSelector().numRowsProperty().bind(him.rowsProperty());
+		mvp.getSelector().numColsProperty().bind(him.colsProperty());
+		mvp.getSelector().selectedColProperty().bind(mp.xposProperty());
+		mvp.getSelector().selectedRowProperty().bind(mp.yposProperty());
+		
 		
 		this.redrawOnChangeOf(this.selectedBProperty());
 		this.redrawOnChangeOf(this.selectedGProperty());
@@ -58,25 +64,7 @@ public class MatrixViewPaneController {
 		this.redrawOnChangeOf(mvp.heightProperty());
 		this.redrawOnChangeOf(him.modelChangedProperty());
 		
-		this.cleanSelectionOnChangeOf(mvp.widthProperty());
-		this.cleanSelectionOnChangeOf(mvp.heightProperty());
 		
-	}
-	
-	public void resizeSelectorOnChangeOf(ObservableValue<?> p) {
-		ChangeListener<Object> repaintListener = (observable, oldValue, newValue) -> {
-			mvp.getSelector().setMatrixSize(him.rowsProperty().intValue(), him.colsProperty().intValue());
-		};
-		
-		p.addListener(repaintListener);
-	}
-	
-	public void cleanSelectionOnChangeOf(ObservableValue<?> p) {
-		ChangeListener<Object> repaintListener = (observable, oldValue, newValue) -> {
-			mvp.getSelector().removeOverlay();
-		};
-		
-		p.addListener(repaintListener);
 	}
 	
 	public void redrawOnChangeOf(ObservableValue<?> p) {

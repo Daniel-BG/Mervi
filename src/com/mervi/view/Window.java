@@ -4,6 +4,7 @@ package com.mervi.view;
 import com.mervi.control.MatrixViewPaneController;
 import com.mervi.model.HyperspectralDiffModel;
 import com.mervi.model.HyperspectralImageModel;
+import com.mervi.model.MousePosition;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -34,6 +35,7 @@ public class Window extends Application {
 		window.setResizable(true);
 		
 		//create model to be filled up
+		MousePosition mp = new MousePosition();
 		HyperspectralImageModel himOrig = new HyperspectralImageModel();
 		HyperspectralImageModel himComp = new HyperspectralImageModel();
 		
@@ -131,7 +133,7 @@ public class Window extends Application {
 		/** this creates one view */
 		int bands = 40, rows = 40, cols = 40;
 		MatrixViewPane mvpOrig = new MatrixViewPane();
-		MatrixViewPaneController mvpcOrig = new MatrixViewPaneController(himOrig, mvpOrig);
+		MatrixViewPaneController mvpcOrig = new MatrixViewPaneController(himOrig, mvpOrig, mp);
 		mvpcOrig.selectedRProperty().bind(spinnerRed.valueProperty());
 		mvpcOrig.selectedGProperty().bind(spinnerGreen.valueProperty());
 		mvpcOrig.selectedBProperty().bind(spinnerBlue.valueProperty());
@@ -145,7 +147,7 @@ public class Window extends Application {
 		
 		/** and another one */
 		MatrixViewPane mvpComp = new MatrixViewPane();
-		MatrixViewPaneController mvpcComp = new MatrixViewPaneController(himComp, mvpComp);
+		MatrixViewPaneController mvpcComp = new MatrixViewPaneController(himComp, mvpComp, mp);
 		mvpcComp.selectedRProperty().bind(spinnerRed.valueProperty());
 		mvpcComp.selectedGProperty().bind(spinnerGreen.valueProperty());
 		mvpcComp.selectedBProperty().bind(spinnerBlue.valueProperty());
@@ -161,7 +163,7 @@ public class Window extends Application {
 		/** and another one */
 		HyperspectralDiffModel hdm = new HyperspectralDiffModel();
 		MatrixViewPane mvpDiff = new MatrixViewPane();
-		MatrixViewPaneController mvpcDiff = new MatrixViewPaneController(hdm, mvpDiff);
+		MatrixViewPaneController mvpcDiff = new MatrixViewPaneController(hdm, mvpDiff, mp);
 		mvpcDiff.selectedRProperty().bind(spinnerRed.valueProperty());
 		mvpcDiff.selectedGProperty().bind(spinnerGreen.valueProperty());
 		mvpcDiff.selectedBProperty().bind(spinnerBlue.valueProperty());
