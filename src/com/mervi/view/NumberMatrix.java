@@ -21,8 +21,8 @@ public class NumberMatrix  {
 		this.change.update();
 	}
 	
-	public Number get(int row, int col) {
-		return ((float) this.matrix.get(row, col)) / ((float) this.matrix.range());
+	public double get(int row, int col) {
+		return ((double) this.matrix.get(row, col)) / ((double) this.matrix.range());
 	}
 	
 	public IntegerProperty rowsProperty() {
@@ -43,9 +43,9 @@ public class NumberMatrix  {
 	 * @param other
 	 * @return true if both matrices are of the same size
 	 */
-	public boolean sizeEquals(NumberMatrix other) {
-		return this.rowsProperty().getValue() == other.rowsProperty().getValue()
-				&& this.colsProperty().getValue() == other.colsProperty().getValue();
+	public boolean sizeEquals(NumberMatrix other) {		
+		return this.rowsProperty().intValue() == other.rowsProperty().intValue()
+				&& this.colsProperty().intValue() == other.colsProperty().intValue();
 	}
 
 

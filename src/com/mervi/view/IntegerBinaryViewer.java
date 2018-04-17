@@ -18,8 +18,8 @@ public class IntegerBinaryViewer extends Label {
 	
 	private void updateText() {
 		String text = "";
-		for (int i = bits.getValue().intValue() - 1; i >= 0 ; i--) {
-			text += ((value.getValue().intValue() >> i) & 0x1) == 0x1 ? "1" : "0";
+		for (int i = bits.intValue() - 1; i >= 0 ; i--) {
+			text += ((value.intValue() >> i) & 0x1) == 0x1 ? "1" : "0";
 		}
 		this.setText(text);
 	}

@@ -6,6 +6,7 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 
 	private int[][][] values;
 	private int range = Integer.MAX_VALUE;
+	private boolean available = false;
 	
 	
 	{
@@ -20,6 +21,7 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 		this.bandsProperty().set(bands);
 		this.rowsProperty().set(rows);
 		this.colsProperty().set(cols);
+		this.available = true;
 		this.modelChangedProperty().update();
 	}
 	
@@ -101,7 +103,7 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 	}
 
 	public boolean available() {
-		return values != null;
+		return this.available;
 	}
 
 	@Override

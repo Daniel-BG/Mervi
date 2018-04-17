@@ -52,46 +52,51 @@ public class MatrixViewPaneController {
 		});
 		
 		InvalidationListener il = e -> {
-			this.selectedRValue.set(him.getBand(this.selectedRProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
-			this.selectedGValue.set(him.getBand(this.selectedGProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
-			this.selectedBValue.set(him.getBand(this.selectedBProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
+			if (!him.available())
+				return;
+			this.selectedRValue.set(him.getBand(this.selectedRIndexProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
+			this.selectedGValue.set(him.getBand(this.selectedGIndexProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
+			this.selectedBValue.set(him.getBand(this.selectedBIndexProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
 		};
 		
 		mp.rowProperty().addListener(il);
 		mp.colProperty().addListener(il);
+		this.selectedRIndexProperty().addListener(il);
+		this.selectedBIndexProperty().addListener(il);
+		this.selectedGIndexProperty().addListener(il);
 		
 		mvp.getSelector().numRowsProperty().bind(him.rowsProperty());
 		mvp.getSelector().numColsProperty().bind(him.colsProperty());
 		mvp.getSelector().selectedColProperty().bind(mp.colProperty());
 		mvp.getSelector().selectedRowProperty().bind(mp.rowProperty());
 		
-		this.selectedRProperty().addListener( (obs, oldval, newVal) ->
+		this.selectedRIndexProperty().addListener( (obs, oldval, newVal) ->
 			mvp.getCanvas().getRedProperty().set(him.getBand(newVal.intValue()))
 		);
-		this.selectedGProperty().addListener( (obs, oldval, newVal) ->
+		this.selectedGIndexProperty().addListener( (obs, oldval, newVal) ->
 			mvp.getCanvas().getGreenProperty().set(him.getBand(newVal.intValue()))
 		);
-		this.selectedBProperty().addListener( (obs, oldval, newVal) ->
+		this.selectedBIndexProperty().addListener( (obs, oldval, newVal) ->
 			mvp.getCanvas().getBlueProperty().set(him.getBand(newVal.intValue()))
 		);
 		
 		him.modelChangedProperty().addListener(e -> {
-			mvp.getCanvas().getRedProperty().set(him.getBand(this.selectedRProperty().intValue()));
-			mvp.getCanvas().getGreenProperty().set(him.getBand(this.selectedGProperty().intValue()));
-			mvp.getCanvas().getBlueProperty().set(him.getBand(this.selectedBProperty().intValue()));
+			mvp.getCanvas().getRedProperty().set(him.getBand(this.selectedRIndexProperty().intValue()));
+			mvp.getCanvas().getGreenProperty().set(him.getBand(this.selectedGIndexProperty().intValue()));
+			mvp.getCanvas().getBlueProperty().set(him.getBand(this.selectedBIndexProperty().intValue()));
 		});
 		
 	}
 	
-	public IntegerProperty selectedRProperty() {
+	public IntegerProperty selectedRIndexProperty() {
 		return this.selectedRIndex;
 	}
 	
-	public IntegerProperty selectedGProperty() {
+	public IntegerProperty selectedGIndexProperty() {
 		return this.selectedGIndex;
 	}
 	
-	public IntegerProperty selectedBProperty() {
+	public IntegerProperty selectedBIndexProperty() {
 		return this.selectedBIndex;
 	}
 	

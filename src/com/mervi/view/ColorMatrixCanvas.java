@@ -1,7 +1,5 @@
 package com.mervi.view;
 
-import com.mervi.model.ReadOnlyMatrix;
-
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -54,13 +52,15 @@ public class ColorMatrixCanvas extends Canvas {
 				this.paintSquare(
 						gc, 
 						new Color(
-								red.get(row, col).doubleValue(), 
-								green.get(row, col).doubleValue(), 
-								blue.get(row, col).doubleValue(), 
+								red.get(row, col), 
+								green.get(row, col), 
+								blue.get(row, col), 
 								1), 
 						col*sqrw, row*sqrh, sqrw, sqrh);
 			}
 		}
+		
+		System.out.println("Drawn: " + width + "," + height + "," + sqrw + "," + sqrh);
 	}
 
 	

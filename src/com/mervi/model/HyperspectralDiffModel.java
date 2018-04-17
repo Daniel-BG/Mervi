@@ -27,22 +27,30 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 	@Override
 	public ReadOnlyMatrix getBand(int index) {
 		//check dimensions
-		if (source1.bandsProperty().getValue() != source2.bandsProperty().getValue() ||
-			source1.rowsProperty().getValue() != source2.rowsProperty().getValue() ||
-			source1.colsProperty().getValue() != source2.colsProperty().getValue() ||
-			source1.getRange() != source2.getRange())
-			throw new IllegalStateException("Images cannot be of different sizes");
+		if (source1.bandsProperty().intValue() != source2.bandsProperty().intValue() ||
+			source1.rowsProperty().intValue() != source2.rowsProperty().intValue() ||
+			source1.colsProperty().intValue() != source2.colsProperty().intValue() ||
+			(source1.getRange() != source2.getRange()))
+			throw new IllegalStateException("Images cannot be of different sizes" 
+					+ source1.bandsProperty().intValue() + ","
+					+ source1.rowsProperty().intValue() + ","
+					+ source1.colsProperty().intValue() + ","
+					+ source1.getRange() + ","
+					+ source2.bandsProperty().intValue() + ","
+					+ source2.rowsProperty().intValue() + ","
+					+ source2.colsProperty().intValue() + ","
+					+ source2.getRange());
 		
 		return new ReadOnlyMatrix() {
 			
 			@Override
 			public int getRows() {
-				return source1.rowsProperty().getValue();
+				return source1.rowsProperty().intValue();
 			}
 			
 			@Override
 			public int getCols() {
-				return source1.colsProperty().getValue();
+				return source1.colsProperty().intValue();
 			}
 			
 			@Override
