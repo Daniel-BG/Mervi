@@ -9,14 +9,14 @@ public class BandMetrics {
 			throw new IllegalArgumentException("Size must be equal");
 	}
 	
-	public double PSNR(ReadOnlyMatrix roma, ReadOnlyMatrix romb) {
+	public static double PSNR(ReadOnlyMatrix roma, ReadOnlyMatrix romb) {
 		sanityCheck(roma, romb);
 		return MetricUtilities.PSNR(MSE(roma, romb), roma.range());
 	}
 	
-	public static float SNR(ReadOnlyMatrix roma, ReadOnlyMatrix romb) {
+	public static double SNR(ReadOnlyMatrix roma, ReadOnlyMatrix romb) {
 		sanityCheck(roma, romb);
-		return (float) (10 * Math.log10(roma.variance() / MSE(roma, romb)));
+		return (double) (10 * Math.log10(roma.variance() / MSE(roma, romb)));
 	}
 	
 	public static double MSE(ReadOnlyMatrix roma, ReadOnlyMatrix romb) {

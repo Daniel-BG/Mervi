@@ -10,13 +10,17 @@ public class PixelMetrics {
 		return Math.abs(a - b);
 	}
 	
-	public static int squareErr(int a, int b) {
-		int err = a - b;
+	public static long squareErr(int a, int b) {
+		long err = a - b;
 		return err * err;
 	}
 	
 	public static double PSNR(int a, int b, int range) {
 		return MetricUtilities.PSNR(squareErr(a, b), range);
+	}
+
+	public static int difference(int originalPix, int compressedPix) {
+		return originalPix - compressedPix;
 	}
 
 }

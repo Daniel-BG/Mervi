@@ -1,6 +1,7 @@
 package com.mervi.view;
 
 
+import java.text.DecimalFormat;
 import java.util.function.Function;
 
 import com.mervi.Config;
@@ -8,6 +9,9 @@ import com.mervi.control.MatrixViewPaneController;
 import com.mervi.model.HyperspectralDiffModel;
 import com.mervi.model.HyperspectralImageModel;
 import com.mervi.model.MousePosition;
+import com.mervi.model.ReadOnlyMatrix;
+import com.mervi.model.metrics.BandMetrics;
+import com.mervi.model.metrics.PixelMetrics;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -96,8 +100,16 @@ public class Window extends Application {
 			spinnerGreen.setOnScroll(createScrollEventHandler.apply(valueFactoryGreen));
 			spinnerBlue.setOnScroll(createScrollEventHandler.apply(valueFactoryBlue));
 		});
+		
+        Label coordLabel = new Label(" @(x, x)");
+        InvalidationListener mpChangedCoord = e -> {
+        	coordLabel.setText(" @: (" + mp.rowProperty().intValue() + "," + mp.colProperty().intValue() + ")");
+        };
+        mp.colProperty().addListener(mpChangedCoord);
+        mp.rowProperty().addListener(mpChangedCoord);
+        coordLabel.setMinWidth(80);
         
-        HBox bandSelector = new HBox(new FWLabel("red"), spinnerRed, new FWLabel("Green"), spinnerGreen, new FWLabel("Blue"), spinnerBlue);
+        HBox bandSelector = new HBox(new FWLabel("red"), spinnerRed, new FWLabel("Green"), spinnerGreen, new FWLabel("Blue"), spinnerBlue, coordLabel);
         
         
         /** Bit viewers */
@@ -120,19 +132,73 @@ public class Window extends Application {
         HBox bvboxDiff = new HBox(10, ibvDiffRed, ibvDiffGreen, ibvDiffBlue, diffBits);
         /****************/
         
-        /** Selected coordinate viewer */
-        Label coordLabel = new Label("Selected coordinate");
-        InvalidationListener mpChangedCoord = e -> {
-        	coordLabel.setText("Selected coordinate: (" + mp.rowProperty().intValue() + "," + mp.colProperty().intValue() + ")");
+        
+        /** METRICS display */
+        //only for the red channel for now as to not crowd the screen too much
+        //pixel:
+        Label pixelMetrics = new Label();
+        InvalidationListener pixelMetricRefresher = e -> {
+        	int row = mp.rowProperty().intValue();
+        	int col = mp.colProperty().intValue();
+        	int band = spinnerRed.valueProperty().getValue().intValue();
+        	int originalPix, compressedPix;
+        	try {
+	        	originalPix = himOrig.getValue(band, row, col);
+	        	compressedPix = himComp.getValue(band, row, col);
+        	} catch (Exception ex) {
+        		return; //if one image has updated and the other hasn't, avoid conflicts
+        	}
+        	
+        	double percent = PixelMetrics.percentDifference(originalPix, compressedPix);
+        	double psnr = PixelMetrics.PSNR(originalPix, compressedPix, himOrig.getRange());
+        	int diff = PixelMetrics.difference(originalPix, compressedPix);
+        	
+        	
+        	pixelMetrics.setText(
+        			"%off: " + String.format(Config.DOUBLE_FORMAT,percent) + 
+        			" PSNR: " + String.format(Config.DOUBLE_FORMAT,psnr) + 
+        			" DIFF: " + diff);
         };
-        mp.colProperty().addListener(mpChangedCoord);
-        mp.rowProperty().addListener(mpChangedCoord);
-        HBox selCoord = new HBox(coordLabel);
-        /********/
+        
+        mp.rowProperty().addListener(pixelMetricRefresher);
+        mp.colProperty().addListener(pixelMetricRefresher);
+        spinnerRed.valueProperty().addListener(pixelMetricRefresher);
+        himOrig.modelChangedProperty().addListener(pixelMetricRefresher);
+        himComp.modelChangedProperty().addListener(pixelMetricRefresher);
+        //band metrics below
+        Label bandMetrics = new Label();
+        InvalidationListener bandMetricRefresher = e -> {
+        	int band = spinnerRed.valueProperty().getValue().intValue();
+        	ReadOnlyMatrix romOrig, romComp;
+        	try {
+	        	romOrig = himOrig.getBand(band);
+	        	romComp = himComp.getBand(band);
+        	} catch (Exception ex) {
+        		return; //if one image has updated and the other hasn't, avoid conflicts
+        	}
+        	
+        	double maxse = BandMetrics.maxSE(romOrig, romComp);
+        	double mse = BandMetrics.MSE(romOrig, romComp);
+        	double snr = BandMetrics.SNR(romOrig, romComp);
+        	double psnr = BandMetrics.PSNR(romOrig, romComp);
+        	
+        	bandMetrics.setText( 
+        			"mse: " + (long) mse + 
+        			" snr: " + String.format(Config.DOUBLE_FORMAT, snr) + 
+        			" psnr: " + String.format(Config.DOUBLE_FORMAT, psnr) + 
+        			" maxse: " + (long) maxse);
+        };
+        
+        spinnerRed.valueProperty().addListener(bandMetricRefresher);
+        himOrig.modelChangedProperty().addListener(bandMetricRefresher);
+        himComp.modelChangedProperty().addListener(bandMetricRefresher);
+        /********************/
+        
+
         
 		
 		/** Putting all things together */
-		VBox vbox = new VBox(originalHBox, compressedHBox, bandSelector, bvboxOrig, bvboxComp, bvboxDiff, selCoord);
+		VBox vbox = new VBox(originalHBox, compressedHBox, bandSelector, bvboxOrig, bvboxComp, bvboxDiff, pixelMetrics, bandMetrics);
 		
 		
 		/** Create and show the scene */
