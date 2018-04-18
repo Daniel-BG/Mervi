@@ -38,7 +38,7 @@ public class Window extends Application {
 		window.setResizable(true);
 		
 		//create model to be filled up
-		int bands = 30, rows = 300, cols = 600;
+		int bands = 40, rows = 300, cols = 600;
 		MousePosition mp = new MousePosition();
 		HyperspectralImageModel himOrig = new HyperspectralImageModel();
 		HyperspectralImageModel himComp = new HyperspectralImageModel();

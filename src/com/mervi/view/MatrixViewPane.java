@@ -4,7 +4,7 @@ import javafx.scene.layout.Pane;
 
 public class MatrixViewPane extends Pane  {
 
-	ColorMatrixCanvas cmc;
+	ColorMatrixView cmc;
 	MatrixSelector ms;
 	
 	/**
@@ -13,11 +13,12 @@ public class MatrixViewPane extends Pane  {
 	 * the canvas
 	 */
 	public MatrixViewPane () {
-		cmc = new ColorMatrixCanvas();
+		cmc = new ColorMatrixView();
 		ms = new MatrixSelector();
+	
 		
-		cmc.widthProperty().bind(this.widthProperty());
-		cmc.heightProperty().bind(this.heightProperty());
+		cmc.fitWidthProperty().bind(this.widthProperty());
+		cmc.fitHeightProperty().bind(this.heightProperty());
 		ms.widthProperty().bind(this.widthProperty());
 		ms.heightProperty().bind(this.heightProperty());
 		
@@ -28,7 +29,7 @@ public class MatrixViewPane extends Pane  {
 	}
 	
 	
-	public ColorMatrixCanvas getCanvas() {
+	public ColorMatrixView getCanvas() {
 		return cmc;
 	}
 	
