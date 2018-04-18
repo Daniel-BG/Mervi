@@ -46,6 +46,9 @@ public abstract class AbstractHyperspectralImageModel {
 	public abstract int getRange();
 	
 	public final ReadOnlyMatrix getBand(int index) {
+		if (this.bandCache == null)
+			throw new NullPointerException();
+			
 		if (this.bandCache[index] == null)
 			this.bandCache[index] = doGetBand(index);
 		

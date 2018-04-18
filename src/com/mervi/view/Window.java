@@ -1,9 +1,12 @@
 package com.mervi.view;
 
 
-import java.text.DecimalFormat;
+import java.io.File;
+import java.io.IOException;
 import java.util.function.Function;
 
+import com.jypec.img.HyperspectralImage;
+import com.jypec.util.io.HyperspectralImageReader;
 import com.mervi.Config;
 import com.mervi.control.MatrixViewPaneController;
 import com.mervi.model.HyperspectralDiffModel;
@@ -17,7 +20,6 @@ import com.mervi.model.metrics.PixelMetrics;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -28,6 +30,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -53,6 +56,7 @@ public class Window extends Application {
 		HyperspectralImageModel himOrig = new HyperspectralImageModel();
 		HyperspectralImageModel himComp = new HyperspectralImageModel();
 		HyperspectralDiffModel hdm = new HyperspectralDiffModel();
+		hdm.setSources(himOrig, himComp);
 		
 		
 		
@@ -61,16 +65,44 @@ public class Window extends Application {
 		
 		/** Original image selector */
 		final TextField originalTextBox = new TextField("Original");
+		originalTextBox.setEditable(false);
 		originalTextBox.setPrefWidth(4000);
 		final Button originalButton = new Button("Original");
+		originalButton.setOnAction(e -> {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Open Resource File");
+			File f = fileChooser.showOpenDialog(window);
+			try {
+				originalTextBox.setText(f.toString());
+				HyperspectralImage hi = HyperspectralImageReader.read(f.toString(), true);
+				himOrig.setFromImage(hi);
+			} catch (IOException e1) {
+				System.out.println("Did not load image");
+			}
+		});
 		originalButton.setMinWidth(90);
 		final HBox originalHBox = new HBox(originalButton, originalTextBox);
 		
 		/** Compressed image selector */
 		final TextField compressedTextBox = new TextField("Compressed");
+		compressedTextBox.setEditable(false);
 		compressedTextBox.setPrefWidth(4000);
 		final Button compressedButton = new Button("Compressed");
 		compressedButton.setMinWidth(90);
+		compressedButton.setOnAction(e -> {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Open Resource File");
+			File f = fileChooser.showOpenDialog(window);
+			try {
+				compressedTextBox.setText(f.toString());	
+				HyperspectralImage hi = HyperspectralImageReader.read(f.toString(), true);
+				himComp.setFromImage(hi);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+						
+					
+		});
 		final HBox compressedHBox = new HBox(compressedButton, compressedTextBox);
 		
 		/** Band selector */
@@ -301,13 +333,12 @@ public class Window extends Application {
 		/*************/
 		
 		/** Finally initialize model */
-		himOrig.setSize(bands, rows, cols);
+		/**himOrig.setSize(bands, rows, cols);
 		himOrig.randomize(0);
 		
 		himComp.setSize(bands, rows, cols);
 		himComp.randomize(1);
 		
-		hdm.setSources(himOrig, himComp);
 		/*****************************/
 
 	}

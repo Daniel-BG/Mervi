@@ -16,13 +16,30 @@ public class NumberMatrix  {
 	
 	public void set(ReadOnlyMatrix m) {
 		this.matrix = m;
+		this.maxVal = null;
+		this.minVal = null;
+		this.maxMinDiff = null;
 		this.cols.set(m.getCols());
 		this.rows.set(m.getRows());
 		this.change.update();
 	}
 	
+	private boolean scaled = true;
+	
+	public void setScaled(boolean scaled) {
+		this.scaled = scaled;
+	}
+	
 	public double get(int row, int col) {
-		return ((double) this.matrix.get(row, col)) / ((double) this.matrix.range());
+		if (!scaled)
+			return ((double) this.matrix.get(row, col)) / ((double) this.matrix.range());
+		else {
+			double val = this.matrix.get(row, col);
+			val -= this.getMin();
+			val /= (double) this.maxMinDiff;
+			return val;
+		}
+			
 	}
 	
 	public IntegerProperty rowsProperty() {
@@ -48,6 +65,44 @@ public class NumberMatrix  {
 				&& this.colsProperty().intValue() == other.colsProperty().intValue();
 	}
 
+	
+	private Integer maxVal;
+	private Integer minVal;
+	private Integer maxMinDiff;
+	
+	public int getMax() {
+		if (maxVal == null)
+			recalculateMinMax();
+		return maxVal;
+	}
+	
+	public int getMin() {
+		if (minVal == null) 
+			recalculateMinMax();
+		return minVal;
+	}
+	
+	public int getMaxMinDiff() {
+		if (maxMinDiff == null)
+			recalculateMinMax();
+		return maxMinDiff;
+	}
+	
+	private void recalculateMinMax() {
+		int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+		for (int row = 0; row < this.rowsProperty().intValue(); row++) {
+			for (int col = 0; col < this.colsProperty().intValue(); col++) {
+				int data = this.matrix.get(row, col);
+				if (data > max)
+					max = data;
+				if (data < min)
+					min = data;
+			}
+		}
+		maxVal = max;
+		minVal = min;
+		maxMinDiff = max - min;
+	}
 
 	
 	

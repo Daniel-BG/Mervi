@@ -2,6 +2,9 @@ package com.mervi.model;
 
 import java.util.Random;
 
+import com.jypec.img.HyperspectralImage;
+import com.jypec.img.HyperspectralImageData;
+
 public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 
 	private int[][][] values;
@@ -17,12 +20,16 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 
 	
 	public void setSize(int bands, int rows, int cols) {
+		this.changeDimensions(bands, rows, cols);
+		this.modelChangedProperty().update();
+	}
+	
+	private void changeDimensions(int bands, int rows, int cols) {
 		this.values = new int[bands][rows][cols];
 		this.bandsProperty().set(bands);
 		this.rowsProperty().set(rows);
 		this.colsProperty().set(cols);
 		this.available = true;
-		this.modelChangedProperty().update();
 	}
 	
 	private void setRange(int range) {
@@ -39,6 +46,23 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 			}
 		}
 		modelChangedProperty().update();
+	}
+	
+	
+	public void setFromImage(HyperspectralImage image) {
+		HyperspectralImageData data = image.getData();
+		int bands = data.getNumberOfBands();
+		int rows = data.getNumberOfLines();
+		int cols = data.getNumberOfSamples();
+		this.changeDimensions(bands, rows, cols);
+		for (int band = 0; band < bands; band++) {
+			for (int row = 0; row < rows; row++) {
+				for (int col = 0; col < cols; col++) {
+					this.values[band][row][col] = data.getDataAt(band, row, col);
+				}
+			}
+		}
+		this.modelChangedProperty().update();
 	}
 	
 	/**
