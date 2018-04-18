@@ -3,6 +3,7 @@ package com.mervi.view;
 
 import java.util.function.Function;
 
+import com.mervi.Config;
 import com.mervi.control.MatrixViewPaneController;
 import com.mervi.model.HyperspectralDiffModel;
 import com.mervi.model.HyperspectralImageModel;
@@ -85,11 +86,8 @@ public class Window extends Application {
 				@Override
 				public EventHandler<? super ScrollEvent> apply(SpinnerValueFactory<Integer> t) {
 					return e -> {
-						if (e.getDeltaY() > 0) {
-							t.increment(1);
-						} else {
-							t.decrement(1);
-						}
+						if (e.getDeltaY() > 0) t.increment(((int) e.getDeltaY()) / Config.SCROLL_UNITS); 
+						else t.decrement((-(int) e.getDeltaY()) / Config.SCROLL_UNITS);
 					};
 				}
 	        };

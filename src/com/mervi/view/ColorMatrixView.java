@@ -42,8 +42,6 @@ public class ColorMatrixView extends ImageView {
 		Image im = ImageUtils.imageFromColorArrays(red, green, blue);
 		
 		this.setImage(im);
-		
-		System.out.println("Redrawn: " + im.getWidth() + "," + im.getHeight());
 	}
 	/**************/
 	

@@ -3,6 +3,7 @@ package com.mervi.model;
 public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 	
 	AbstractHyperspectralImageModel source1, source2;
+
 	
 	
 	public void setSources(AbstractHyperspectralImageModel source1, AbstractHyperspectralImageModel source2) {
@@ -25,7 +26,7 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 	}
 
 	@Override
-	public ReadOnlyMatrix getBand(int index) {
+	public ReadOnlyMatrix doGetBand(int index) {
 		//check dimensions
 		if (source1.bandsProperty().intValue() != source2.bandsProperty().intValue() ||
 			source1.rowsProperty().intValue() != source2.rowsProperty().intValue() ||

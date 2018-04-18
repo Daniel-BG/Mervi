@@ -9,6 +9,7 @@ public abstract class AbstractHyperspectralImageModel {
 
 	private IntegerProperty bands, rows, cols;
 	private ObjectChangedProperty modelChanged; //updated when the values change
+	private ReadOnlyMatrix[] bandCache;
 	
 	{
 		this.bands = new SimpleIntegerProperty();
@@ -16,6 +17,10 @@ public abstract class AbstractHyperspectralImageModel {
 		this.cols = new SimpleIntegerProperty();
 	
 		this.modelChanged = new ObjectChangedProperty();
+		
+		this.modelChanged.addListener(e -> {
+			bandCache = new ReadOnlyMatrix[this.bandsProperty().intValue()];
+		});
 	}
 	
 	public IntegerProperty rowsProperty() {
@@ -38,7 +43,14 @@ public abstract class AbstractHyperspectralImageModel {
 	
 	public abstract int getRange();
 	
-	public abstract ReadOnlyMatrix getBand(int index);
+	public final ReadOnlyMatrix getBand(int index) {
+		if (this.bandCache[index] == null)
+			this.bandCache[index] = doGetBand(index);
+		
+		return this.bandCache[index];
+	}
+	
+	public abstract ReadOnlyMatrix doGetBand(int index);
 	
 	public abstract boolean available();
 	
