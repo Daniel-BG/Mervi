@@ -11,6 +11,7 @@ import com.mervi.model.HyperspectralImageModel;
 import com.mervi.model.MousePosition;
 import com.mervi.model.ReadOnlyMatrix;
 import com.mervi.model.metrics.BandMetrics;
+import com.mervi.model.metrics.ImageMetrics;
 import com.mervi.model.metrics.PixelMetrics;
 
 import javafx.application.Application;
@@ -155,7 +156,7 @@ public class Window extends Application {
         	
         	
         	pixelMetrics.setText(
-        			"%off: " + String.format(Config.DOUBLE_FORMAT,percent) + 
+        			"PIXEL: %off: " + String.format(Config.DOUBLE_FORMAT,percent) + 
         			" PSNR: " + String.format(Config.DOUBLE_FORMAT,psnr) + 
         			" DIFF: " + diff);
         };
@@ -183,7 +184,7 @@ public class Window extends Application {
         	double psnr = BandMetrics.PSNR(romOrig, romComp);
         	
         	bandMetrics.setText( 
-        			"mse: " + (long) mse + 
+        			"BAND: mse: " + (long) mse + 
         			" snr: " + String.format(Config.DOUBLE_FORMAT, snr) + 
         			" psnr: " + String.format(Config.DOUBLE_FORMAT, psnr) + 
         			" maxse: " + (long) maxse);
@@ -192,18 +193,39 @@ public class Window extends Application {
         spinnerRed.valueProperty().addListener(bandMetricRefresher);
         himOrig.modelChangedProperty().addListener(bandMetricRefresher);
         himComp.modelChangedProperty().addListener(bandMetricRefresher);
+        //image metrics below
+        Label imageMetrics = new Label();
+        InvalidationListener imageMetricRefresher = e -> {
+        	if (!himOrig.sizeEquals(himComp))
+        		return;
+        	
+        	double maxse = ImageMetrics.maxSE(himOrig, himComp);
+        	double mse = ImageMetrics.MSE(himOrig, himComp);
+        	double snr = ImageMetrics.SNR(himOrig, himComp);
+        	double psnr = ImageMetrics.PSNR(himOrig, himComp);
+        	
+        	imageMetrics.setText( 
+        			"IMAGE: mse: " + (long) mse + 
+        			" snr: " + String.format(Config.DOUBLE_FORMAT, snr) + 
+        			" psnr: " + String.format(Config.DOUBLE_FORMAT, psnr) + 
+        			" maxse: " + (long) maxse);
+        	
+        };
+        himOrig.modelChangedProperty().addListener(imageMetricRefresher);
+        himComp.modelChangedProperty().addListener(imageMetricRefresher);
         /********************/
         
 
         
 		
 		/** Putting all things together */
-		VBox vbox = new VBox(originalHBox, compressedHBox, bandSelector, bvboxOrig, bvboxComp, bvboxDiff, pixelMetrics, bandMetrics);
+		VBox vbox = new VBox(originalHBox, compressedHBox, bandSelector, bvboxOrig, bvboxComp, bvboxDiff, pixelMetrics, bandMetrics, imageMetrics);
 		
 		
 		/** Create and show the scene */
 		scene = new Scene(vbox, 400, 300);	
 		window.setScene(scene);
+		
 		window.setTitle("test");
 		window.show();
 		
