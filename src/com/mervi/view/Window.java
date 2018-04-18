@@ -1,6 +1,8 @@
 package com.mervi.view;
 
 
+import java.util.function.Function;
+
 import com.mervi.control.MatrixViewPaneController;
 import com.mervi.model.HyperspectralDiffModel;
 import com.mervi.model.HyperspectralImageModel;
@@ -9,6 +11,7 @@ import com.mervi.model.MousePosition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -50,34 +54,22 @@ public class Window extends Application {
 		//https://stackoverflow.com/questions/23449932/javafx-resize-canvas-when-screen-is-resized
 		
 		/** Original image selector */
-		final HBox originalHBox = new HBox();
 		final TextField originalTextBox = new TextField("Original");
 		originalTextBox.setPrefWidth(4000);
 		final Button originalButton = new Button("Original");
 		originalButton.setMinWidth(90);
-		originalHBox.getChildren().addAll(originalButton, originalTextBox);
+		final HBox originalHBox = new HBox(originalButton, originalTextBox);
 		
 		/** Compressed image selector */
-		final HBox compressedHBox = new HBox();
 		final TextField compressedTextBox = new TextField("Compressed");
 		compressedTextBox.setPrefWidth(4000);
 		final Button compressedButton = new Button("Compressed");
 		compressedButton.setMinWidth(90);
-		compressedHBox.getChildren().addAll(compressedButton, compressedTextBox);
+		final HBox compressedHBox = new HBox(compressedButton, compressedTextBox);
 		
 		/** Band selector */
-		final HBox bandSelector = new HBox();
-		
-		final Label labelRed = new Label("red");
-		labelRed.setMinWidth(30);
 		final Spinner<Integer> spinnerRed = new Spinner<Integer>();
-        
-        final Label labelBlue = new Label("blue");
-        labelBlue.setMinWidth(35);
 		final Spinner<Integer> spinnerBlue = new Spinner<Integer>();
-		
-        final Label labelGreen = new Label("green");
-        labelGreen.setMinWidth(40);
 		final Spinner<Integer> spinnerGreen = new Spinner<Integer>();
         
 		himOrig.bandsProperty().addListener((observable, oldVal, newVal) -> {
@@ -88,64 +80,61 @@ public class Window extends Application {
 	        spinnerBlue.setValueFactory(valueFactoryBlue);
 	        spinnerGreen.setValueFactory(valueFactoryGreen);
 	        
-			spinnerRed.setOnScroll(e -> {
-				if (e.getDeltaY() > 0) {
-					valueFactoryRed.increment(1);
-				} else {
-					valueFactoryRed.decrement(1);
+	        Function<SpinnerValueFactory<Integer>, EventHandler<? super ScrollEvent>> createScrollEventHandler = 
+	        		new Function<SpinnerValueFactory<Integer>, EventHandler<? super ScrollEvent>>() {
+				@Override
+				public EventHandler<? super ScrollEvent> apply(SpinnerValueFactory<Integer> t) {
+					return e -> {
+						if (e.getDeltaY() > 0) {
+							t.increment(1);
+						} else {
+							t.decrement(1);
+						}
+					};
 				}
-			});
-			
-			spinnerGreen.setOnScroll(e -> {
-				if (e.getDeltaY() > 0) {
-					valueFactoryGreen.increment(1);
-				} else {
-					valueFactoryGreen.decrement(1);
-				}
-			});
-			
-			spinnerBlue.setOnScroll(e -> {
-				if (e.getDeltaY() > 0) {
-					valueFactoryBlue.increment(1);
-				} else {
-					valueFactoryBlue.decrement(1);
-				}
-			});
+	        };
+	        
+			spinnerRed.setOnScroll(createScrollEventHandler.apply(valueFactoryRed));
+			spinnerGreen.setOnScroll(createScrollEventHandler.apply(valueFactoryGreen));
+			spinnerBlue.setOnScroll(createScrollEventHandler.apply(valueFactoryBlue));
 		});
         
-        bandSelector.getChildren().addAll(labelRed, spinnerRed, labelGreen, spinnerGreen, labelBlue, spinnerBlue);
+        HBox bandSelector = new HBox(new FWLabel("red"), spinnerRed, new FWLabel("Green"), spinnerGreen, new FWLabel("Blue"), spinnerBlue);
         
         
         /** Bit viewers */
-        HBox bvboxOrig = new HBox();
         Label origBits = new Label("(Orig)");
         IntegerBinaryViewer ibvOrigRed = new IntegerBinaryViewer(16);
         IntegerBinaryViewer ibvOrigBlue = new IntegerBinaryViewer(16);
         IntegerBinaryViewer ibvOrigGreen = new IntegerBinaryViewer(16);
-        bvboxOrig.setSpacing(10);
-        bvboxOrig.getChildren().addAll(ibvOrigRed, ibvOrigGreen, ibvOrigBlue, origBits);
-        
-        HBox bvboxComp = new HBox();
+        HBox bvboxOrig = new HBox(10, ibvOrigRed, ibvOrigGreen, ibvOrigBlue, origBits);
+       
         Label compBits = new Label("(Comp)");
         IntegerBinaryViewer ibvCompRed = new IntegerBinaryViewer(16);
         IntegerBinaryViewer ibvCompBlue = new IntegerBinaryViewer(16);
         IntegerBinaryViewer ibvCompGreen = new IntegerBinaryViewer(16);
-        bvboxComp.setSpacing(10);
-        bvboxComp.getChildren().addAll(ibvCompRed, ibvCompGreen, ibvCompBlue, compBits);
+        HBox bvboxComp = new HBox(10, ibvCompRed, ibvCompGreen, ibvCompBlue, compBits);
         
-        HBox bvboxDiff = new HBox();
         Label diffBits = new Label("(Diff)");
         IntegerBinaryViewer ibvDiffRed = new IntegerBinaryViewer(16);
         IntegerBinaryViewer ibvDiffBlue = new IntegerBinaryViewer(16);
         IntegerBinaryViewer ibvDiffGreen = new IntegerBinaryViewer(16);
-        bvboxDiff.setSpacing(10);
-        bvboxDiff.getChildren().addAll(ibvDiffRed, ibvDiffGreen, ibvDiffBlue, diffBits);
+        HBox bvboxDiff = new HBox(10, ibvDiffRed, ibvDiffGreen, ibvDiffBlue, diffBits);
         /****************/
+        
+        /** Selected coordinate viewer */
+        Label coordLabel = new Label("Selected coordinate");
+        InvalidationListener mpChangedCoord = e -> {
+        	coordLabel.setText("Selected coordinate: (" + mp.rowProperty().intValue() + "," + mp.colProperty().intValue() + ")");
+        };
+        mp.colProperty().addListener(mpChangedCoord);
+        mp.rowProperty().addListener(mpChangedCoord);
+        HBox selCoord = new HBox(coordLabel);
+        /********/
         
 		
 		/** Putting all things together */
-		VBox vbox = new VBox();
-		vbox.getChildren().addAll(originalHBox, compressedHBox, bandSelector, bvboxOrig, bvboxComp, bvboxDiff);
+		VBox vbox = new VBox(originalHBox, compressedHBox, bandSelector, bvboxOrig, bvboxComp, bvboxDiff, selCoord);
 		
 		
 		/** Create and show the scene */
