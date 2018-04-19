@@ -107,14 +107,17 @@ public class Window extends Application {
 		final Spinner<Integer> spinnerRed = new Spinner<Integer>();
 		final Spinner<Integer> spinnerBlue = new Spinner<Integer>();
 		final Spinner<Integer> spinnerGreen = new Spinner<Integer>();
+		final Spinner<Integer> spinnerAll = new Spinner<Integer>();
         
 		himOrig.bandsProperty().addListener((observable, oldVal, newVal) -> {
 			SpinnerValueFactory<Integer> valueFactoryRed = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
 			SpinnerValueFactory<Integer> valueFactoryGreen = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
 			SpinnerValueFactory<Integer> valueFactoryBlue = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
+			SpinnerValueFactory<Integer> valueFactoryAll = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
 	        spinnerRed.setValueFactory(valueFactoryRed);
 	        spinnerBlue.setValueFactory(valueFactoryBlue);
 	        spinnerGreen.setValueFactory(valueFactoryGreen);
+	        spinnerAll.setValueFactory(valueFactoryAll);
 	        
 	        Function<SpinnerValueFactory<Integer>, EventHandler<? super ScrollEvent>> createScrollEventHandler = 
 	        		new Function<SpinnerValueFactory<Integer>, EventHandler<? super ScrollEvent>>() {
@@ -130,6 +133,15 @@ public class Window extends Application {
 			spinnerRed.setOnScroll(createScrollEventHandler.apply(valueFactoryRed));
 			spinnerGreen.setOnScroll(createScrollEventHandler.apply(valueFactoryGreen));
 			spinnerBlue.setOnScroll(createScrollEventHandler.apply(valueFactoryBlue));
+			
+			spinnerAll.setOnScroll(e -> {
+				if (e.getDeltaY() > 0) spinnerAll.increment(((int) e.getDeltaY()) / Config.SCROLL_UNITS); 
+				else spinnerAll.decrement((-(int) e.getDeltaY()) / Config.SCROLL_UNITS);
+				
+				valueFactoryBlue.setValue(spinnerAll.getValue());
+				valueFactoryRed.setValue(spinnerAll.getValue());
+				valueFactoryGreen.setValue(spinnerAll.getValue());
+			});
 		});
 		
         Label coordLabel = new Label(" @(x, x)");
@@ -140,7 +152,7 @@ public class Window extends Application {
         mp.rowProperty().addListener(mpChangedCoord);
         coordLabel.setMinWidth(80);
         
-        HBox bandSelector = new HBox(new FWLabel("red"), spinnerRed, new FWLabel("Green"), spinnerGreen, new FWLabel("Blue"), spinnerBlue, coordLabel);
+        HBox bandSelector = new HBox(new FWLabel("red"), spinnerRed, new FWLabel("Green"), spinnerGreen, new FWLabel("Blue"), spinnerBlue, coordLabel, spinnerAll);
         
         
         /** Bit viewers */

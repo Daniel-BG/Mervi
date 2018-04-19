@@ -1,9 +1,15 @@
 package com.mervi.view;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 public class MatrixSelector extends Canvas {
@@ -12,12 +18,17 @@ public class MatrixSelector extends Canvas {
 	private final IntegerProperty numCols;
 	private final IntegerProperty selectedRow;
 	private final IntegerProperty selectedCol;
+	//RELATIVE (0.0 to 1.0)
+	private final DoubleProperty selectedXPos;
+	private final DoubleProperty selectedYPos;
 	
 	{
 		this.numCols = new SimpleIntegerProperty(0);
 		this.numRows = new SimpleIntegerProperty(0);
 		this.selectedCol = new SimpleIntegerProperty(0);
 		this.selectedRow = new SimpleIntegerProperty(0);
+		this.selectedXPos = new SimpleDoubleProperty(0);
+		this.selectedYPos = new SimpleDoubleProperty(0);
 		
 		this.numCols.addListener(e -> redraw());
 		this.numRows.addListener(e -> redraw());
@@ -39,8 +50,46 @@ public class MatrixSelector extends Canvas {
 		
 		gc.setFill(Color.TRANSPARENT);
 		gc.setStroke(Color.BLACK);
-		gc.setLineWidth(3.0);
+		gc.setLineWidth(2.0);
 		gc.strokeRect(this.selectedCol.intValue()*sqrw, this.selectedRow.intValue()*sqrh, sqrw, sqrh);
+		gc.setStroke(Color.WHITE);
+		gc.setLineWidth(1.0);
+		gc.strokeRect(this.selectedCol.intValue()*sqrw, this.selectedRow.intValue()*sqrh, sqrw, sqrh);
+		
+		/* COOL but mostly useless code
+		int SELECT_SIZE = 3;
+		int AUGMENT_VAL = 10;
+	
+		MatrixViewPane parent = (MatrixViewPane) this.getParent();
+		double width = parent.widthProperty().doubleValue();
+		double height = parent.heightProperty().doubleValue();
+		double xpos = this.selectedXPos.doubleValue() * width;
+		double ypos = this.selectedYPos.doubleValue() * height;
+		
+		double xposTL = Math.max(0, xpos - SELECT_SIZE);
+		double yposTL = Math.max(0, ypos - SELECT_SIZE);
+		double xposBR = Math.min(width, xpos + SELECT_SIZE);
+		double yposBR = Math.min(height, ypos + SELECT_SIZE);
+		double pixelsRight = width - xpos;
+		double pixelsBottom = height - ypos;
+
+		SnapshotParameters sp = new SnapshotParameters();
+		sp.setViewport(new Rectangle2D(xposTL, yposTL, xposBR-xposTL, yposBR-yposTL)); //fill with proper coordinates
+		WritableImage wi = new WritableImage((int) (xposBR - xposTL), (int) (yposBR - yposTL)); //fill with proper coordinates
+		this.getParent().snapshot(sp, wi);	//get the snapshot
+		
+		//resize the image
+		WritableImage wiScaled = new WritableImage((int) (wi.getWidth() * AUGMENT_VAL), (int) (wi.getHeight() * AUGMENT_VAL));
+		double centerx = (xpos - xposTL) * AUGMENT_VAL, centery = (ypos - yposTL) * AUGMENT_VAL;
+		for (int i = 0; i < wiScaled.getWidth(); i++) {
+			for (int j = 0; j < wiScaled.getHeight(); j++) {
+				if (Math.sqrt((Math.abs(i - centerx) * Math.abs(i - centerx) + Math.abs(j - centery) * Math.abs(j - centery))) < SELECT_SIZE * AUGMENT_VAL)
+					wiScaled.getPixelWriter().setArgb(i, j, wi.getPixelReader().getArgb(i / AUGMENT_VAL, j / AUGMENT_VAL));
+			}
+		}
+
+		gc.drawImage(wiScaled, xpos - (xpos - xposTL) * AUGMENT_VAL, ypos - (ypos - yposTL) * AUGMENT_VAL);
+		gc.strokeRect(this.selectedCol.intValue()*sqrw, this.selectedRow.intValue()*sqrh, sqrw, sqrh);*/
 	}
 
 	public IntegerProperty numRowsProperty() {
@@ -57,5 +106,13 @@ public class MatrixSelector extends Canvas {
 	
 	public IntegerProperty selectedColProperty() {
 		return this.selectedCol;
+	}
+	
+	public DoubleProperty selectedXPosProperty() {
+		return this.selectedXPos;
+	}
+	
+	public DoubleProperty selectedYPosProperty() {
+		return this.selectedYPos;
 	}
 }

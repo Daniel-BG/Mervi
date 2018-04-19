@@ -48,6 +48,8 @@ public class MatrixViewPaneController {
 			
 			mp.colProperty().set(realxpos);
 			mp.rowProperty().set(realypos);
+			mp.xPosProperty().set(relxpos);
+			mp.yPosProperty().set(relypos);
 			
 		});
 		
@@ -69,6 +71,8 @@ public class MatrixViewPaneController {
 		mvp.getSelector().numColsProperty().bind(him.colsProperty());
 		mvp.getSelector().selectedColProperty().bind(mp.colProperty());
 		mvp.getSelector().selectedRowProperty().bind(mp.rowProperty());
+		mvp.getSelector().selectedXPosProperty().bind(mp.xPosProperty());
+		mvp.getSelector().selectedYPosProperty().bind(mp.yPosProperty());
 		
 		
 		this.selectedRIndexProperty().addListener( (obs, oldval, newVal) -> {
