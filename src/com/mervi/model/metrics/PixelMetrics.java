@@ -3,7 +3,7 @@ package com.mervi.model.metrics;
 public class PixelMetrics {
 	
 	public static double percentDifference(int a, int b) {
-		return (double) a / (double) b - 1.0f;
+		return 100.0 * ((double) a / (double) b - 1.0);
 	}
 	
 	public static int absoluteDifference(int a, int b) {

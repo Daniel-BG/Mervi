@@ -15,10 +15,10 @@ public class MatrixViewPane extends Pane  {
 	public MatrixViewPane () {
 		cmc = new ColorMatrixView();
 		ms = new MatrixSelector();
-	
 		
-		cmc.fitWidthProperty().bind(this.widthProperty());
-		cmc.fitHeightProperty().bind(this.heightProperty());
+		cmc.bindWidthTo(this.widthProperty());
+		cmc.bindHeightTo(this.heightProperty());
+	
 		ms.widthProperty().bind(this.widthProperty());
 		ms.heightProperty().bind(this.heightProperty());
 		

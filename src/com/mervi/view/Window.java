@@ -40,7 +40,6 @@ public class Window extends Application {
 	Stage window;
 	Scene scene;
 	
-	private static final int SQUARE_SIZE = 2; //in pixels
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -320,12 +319,12 @@ public class Window extends Application {
 		InvalidationListener resizeAfterModelChange = e -> {
 			int newrows = himOrig.rowsProperty().intValue();
 			int newcols = himOrig.colsProperty().intValue();
-			mvsComp.setWidth(newcols*SQUARE_SIZE);
-			mvsComp.setHeight(newrows*SQUARE_SIZE);
-			mvsOrig.setWidth(newcols*SQUARE_SIZE);
-			mvsOrig.setHeight(newrows*SQUARE_SIZE);
-			mvsDiff.setWidth(newcols*SQUARE_SIZE);
-			mvsDiff.setHeight(newrows*SQUARE_SIZE);
+			mvsComp.setWidth(newcols*Config.DEFAULT_PIXEL_SIZE);
+			mvsComp.setHeight(newrows*Config.DEFAULT_PIXEL_SIZE);
+			mvsOrig.setWidth(newcols*Config.DEFAULT_PIXEL_SIZE);
+			mvsOrig.setHeight(newrows*Config.DEFAULT_PIXEL_SIZE);
+			mvsDiff.setWidth(newcols*Config.DEFAULT_PIXEL_SIZE);
+			mvsDiff.setHeight(newrows*Config.DEFAULT_PIXEL_SIZE);
 		};
 		
 		himOrig.colsProperty().addListener(resizeAfterModelChange);

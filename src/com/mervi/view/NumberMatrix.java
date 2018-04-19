@@ -5,6 +5,10 @@ import com.mervi.model.ReadOnlyMatrix;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 
 public class NumberMatrix  {
 	
@@ -19,9 +23,11 @@ public class NumberMatrix  {
 		this.maxVal = null;
 		this.minVal = null;
 		this.maxMinDiff = null;
+		this.bwImage = null;
 		this.cols.set(m.getCols());
 		this.rows.set(m.getRows());
 		this.change.update();
+		
 	}
 	
 	private boolean scaled = true;
@@ -69,6 +75,7 @@ public class NumberMatrix  {
 	private Integer maxVal;
 	private Integer minVal;
 	private Integer maxMinDiff;
+	private Image bwImage; //cached image for this number matrix
 	
 	public int getMax() {
 		if (maxVal == null)
@@ -105,6 +112,21 @@ public class NumberMatrix  {
 	}
 
 	
+	public Image getImage() {
+		if (this.bwImage != null)
+			return this.bwImage;
+		
+		WritableImage wi = new WritableImage(cols.intValue(), rows.intValue());
+		PixelWriter pw = wi.getPixelWriter();
+				
+		for (int col = 0; col < cols.intValue(); col++) {
+			for (int row = 0; row < rows.intValue(); row++) {
+				pw.setColor(col, row, new Color(this.get(row, col), this.get(row, col), this.get(row, col), 1));
+			}
+		}
+		
+		return this.bwImage = wi;
+	}
 	
 }
 

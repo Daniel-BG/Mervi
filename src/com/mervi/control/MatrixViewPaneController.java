@@ -70,6 +70,7 @@ public class MatrixViewPaneController {
 		mvp.getSelector().selectedColProperty().bind(mp.colProperty());
 		mvp.getSelector().selectedRowProperty().bind(mp.rowProperty());
 		
+		
 		this.selectedRIndexProperty().addListener( (obs, oldval, newVal) -> {
 			if (him.available())
 				mvp.getCanvas().getRedProperty().set(him.getBand(newVal.intValue()));
