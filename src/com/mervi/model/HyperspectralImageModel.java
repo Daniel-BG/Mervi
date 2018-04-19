@@ -102,8 +102,8 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 	}
 	
 	@Override
-	public ReadOnlyMatrix doGetBand(int index) {
-		return new ReadOnlyMatrix() {
+	public HyperspectralBandModel doGetBand(int index) {
+		return new HyperspectralBandModel() {
 			@Override
 			public int getRows() {
 				return rowsProperty().intValue();

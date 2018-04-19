@@ -5,10 +5,8 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-public abstract class ReadOnlyMatrix {
+public abstract class HyperspectralBandModel {
 	
-	
-
 	public abstract int getRows();
 	
 	public abstract int getCols();
@@ -17,7 +15,7 @@ public abstract class ReadOnlyMatrix {
 	
 	public abstract int range();
 	
-	public boolean sizeEquals(ReadOnlyMatrix other) {
+	public boolean sizeEquals(HyperspectralBandModel other) {
 		return this.getRows() == other.getRows() 
 				&& this.getCols() == other.getCols()
 				&& this.range() == other.range();
@@ -26,10 +24,6 @@ public abstract class ReadOnlyMatrix {
 	/** precalculated values for metrics */
 	private Double average;
 	private Double variance;
-	private Integer maxVal;
-	private Integer minVal;
-	private Integer maxMinDiff;
-	
 	
 	public double variance() {
 		if (variance != null)
@@ -61,6 +55,13 @@ public abstract class ReadOnlyMatrix {
 
 		return average = acc / ((double) getRows() * getCols());
 	}
+	
+	
+	/** Precalculated values for image drawing */
+	private Integer maxVal;
+	private Integer minVal;
+	private Integer maxMinDiff;
+	private Image bwImage;
 	
 	private void recalculateMinMax() {
 		int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
@@ -96,16 +97,12 @@ public abstract class ReadOnlyMatrix {
 		return maxMinDiff;
 	}
 	
-	public double getDbl(int row, int col) {
+	private double getNormalized(int row, int col) {
 		double val = get(row, col);
 		val -= this.getMin();
 		val /= (double) getMaxMinDiff();
 		return val;
 	}
-	
-
-	/** Precalculated image for displaying purposes */
-	private Image bwImage;
 	
 	public Image getImage() {
 		if (this.bwImage != null)
@@ -116,7 +113,10 @@ public abstract class ReadOnlyMatrix {
 				
 		for (int col = 0; col < getCols(); col++) {
 			for (int row = 0; row < getRows(); row++) {
-				pw.setColor(col, row, new Color(this.getDbl(row, col), this.getDbl(row, col), this.getDbl(row, col), 1));
+				double value = this.getNormalized(row, col);
+				int color = (int) (value * 255.0);
+				pw.setArgb(col, row, 0xff000000 | (color << 16) | (color << 8) | color);
+				//pw.setColor(col, row, new Color(value, value, value, 1));
 			}
 		}
 		

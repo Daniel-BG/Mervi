@@ -26,7 +26,7 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 	}
 
 	@Override
-	public ReadOnlyMatrix doGetBand(int index) {
+	public HyperspectralBandModel doGetBand(int index) {
 		//check dimensions
 		if (source1.bandsProperty().intValue() != source2.bandsProperty().intValue() ||
 			source1.rowsProperty().intValue() != source2.rowsProperty().intValue() ||
@@ -42,7 +42,7 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 					+ source2.colsProperty().intValue() + ","
 					+ source2.getRange());
 		
-		return new ReadOnlyMatrix() {
+		return new HyperspectralBandModel() {
 			
 			@Override
 			public int getRows() {

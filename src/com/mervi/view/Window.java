@@ -12,7 +12,7 @@ import com.mervi.control.MatrixViewPaneController;
 import com.mervi.model.HyperspectralDiffModel;
 import com.mervi.model.HyperspectralImageModel;
 import com.mervi.model.MousePosition;
-import com.mervi.model.ReadOnlyMatrix;
+import com.mervi.model.HyperspectralBandModel;
 import com.mervi.model.metrics.BandMetrics;
 import com.mervi.model.metrics.ImageMetrics;
 import com.mervi.model.metrics.PixelMetrics;
@@ -201,7 +201,7 @@ public class Window extends Application {
         Label bandMetrics = new Label();
         InvalidationListener bandMetricRefresher = e -> {
         	int band = spinnerRed.valueProperty().getValue().intValue();
-        	ReadOnlyMatrix romOrig, romComp;
+        	HyperspectralBandModel romOrig, romComp;
         	try {
 	        	romOrig = himOrig.getBand(band);
 	        	romComp = himComp.getBand(band);
