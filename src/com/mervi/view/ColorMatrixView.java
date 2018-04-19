@@ -3,6 +3,7 @@ package com.mervi.view;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
@@ -13,18 +14,11 @@ import javafx.scene.image.ImageView;
  */
 public class ColorMatrixView extends Group {
 	
-	private final HyperspectralBandNotifier red = new HyperspectralBandNotifier();
-	private final HyperspectralBandNotifier green = new HyperspectralBandNotifier();
-	private final HyperspectralBandNotifier blue = new HyperspectralBandNotifier();
-	
 	private ImageView imageViewRed = new ImageView();
 	private ImageView imageViewGreen = new ImageView();
 	private ImageView imageViewBlue = new ImageView();
 	
 	{
-		red.changedProperty().addListener(e -> imageViewRed.setImage(red.getImage()));
-		green.changedProperty().addListener(e -> imageViewGreen.setImage(green.getImage()));
-		blue.changedProperty().addListener(e -> imageViewBlue.setImage(blue.getImage()));
 		imageViewRed.setBlendMode(BlendMode.RED);
 		imageViewGreen.setBlendMode(BlendMode.GREEN);
 		imageViewBlue.setBlendMode(BlendMode.BLUE);
@@ -34,26 +28,22 @@ public class ColorMatrixView extends Group {
 	
 	/**************/
 	/** Controls **/
-	
-	public HyperspectralBandNotifier getRedProperty() {
-		return this.red;
+	public void setRedComponent(Image red) {
+		imageViewRed.setImage(red);
 	}
 	
-	public HyperspectralBandNotifier getGreenProperty() {
-		return this.green;
-	}
-
-	public HyperspectralBandNotifier getBlueProperty() {
-		return this.blue;
+	public void setGreenComponent(Image green) {
+		imageViewGreen.setImage(green);
 	}
 	
-	public void bindWidthTo(ReadOnlyDoubleProperty widthProperty) {
+	public void setBlueComponent(Image blue) {
+		imageViewBlue.setImage(blue);
+	}
+	
+	public void bindDimensionsTo(ReadOnlyDoubleProperty widthProperty, ReadOnlyDoubleProperty heightProperty) {
 		this.imageViewBlue.fitWidthProperty().bind(widthProperty);
 		this.imageViewGreen.fitWidthProperty().bind(widthProperty);
 		this.imageViewRed.fitWidthProperty().bind(widthProperty);
-	}
-	
-	public void bindHeightTo(ReadOnlyDoubleProperty heightProperty) {
 		this.imageViewBlue.fitHeightProperty().bind(heightProperty);
 		this.imageViewGreen.fitHeightProperty().bind(heightProperty);
 		this.imageViewRed.fitHeightProperty().bind(heightProperty);

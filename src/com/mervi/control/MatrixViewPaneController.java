@@ -73,23 +73,23 @@ public class MatrixViewPaneController {
 		
 		this.selectedRIndexProperty().addListener( (obs, oldval, newVal) -> {
 			if (him.available())
-				mvp.getCanvas().getRedProperty().set(him.getBand(newVal.intValue()));
+				mvp.getCanvas().setRedComponent(him.getBand(newVal.intValue()).getImage());
 		});
 		this.selectedGIndexProperty().addListener( (obs, oldval, newVal) -> {
 			if (him.available())
-				mvp.getCanvas().getGreenProperty().set(him.getBand(newVal.intValue()));
+				mvp.getCanvas().setGreenComponent(him.getBand(newVal.intValue()).getImage());
 		});
 		this.selectedBIndexProperty().addListener( (obs, oldval, newVal) -> {
 			if (him.available())
-				mvp.getCanvas().getBlueProperty().set(him.getBand(newVal.intValue()));
+				mvp.getCanvas().setBlueComponent(him.getBand(newVal.intValue()).getImage());
 		});
 		
 		him.modelChangedProperty().addListener(e -> {
 			if (!him.available())
 				return;
-			mvp.getCanvas().getRedProperty().set(him.getBand(this.selectedRIndexProperty().intValue()));
-			mvp.getCanvas().getGreenProperty().set(him.getBand(this.selectedGIndexProperty().intValue()));
-			mvp.getCanvas().getBlueProperty().set(him.getBand(this.selectedBIndexProperty().intValue()));
+			mvp.getCanvas().setRedComponent(him.getBand(this.selectedRIndexProperty().intValue()).getImage());
+			mvp.getCanvas().setGreenComponent(him.getBand(this.selectedGIndexProperty().intValue()).getImage());
+			mvp.getCanvas().setBlueComponent(him.getBand(this.selectedBIndexProperty().intValue()).getImage());
 		});
 		
 	}

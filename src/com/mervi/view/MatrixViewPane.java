@@ -16,12 +16,10 @@ public class MatrixViewPane extends Pane  {
 		cmc = new ColorMatrixView();
 		ms = new MatrixSelector();
 		
-		cmc.bindWidthTo(this.widthProperty());
-		cmc.bindHeightTo(this.heightProperty());
-	
+		cmc.bindDimensionsTo(this.widthProperty(), this.heightProperty());
+		
 		ms.widthProperty().bind(this.widthProperty());
 		ms.heightProperty().bind(this.heightProperty());
-		
 		
 		this.setPrefSize(4096, 4096);
 	    this.getChildren().addAll(this.getCanvas(), this.getSelector());

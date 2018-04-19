@@ -3,7 +3,6 @@ package com.mervi.model;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 
 public abstract class HyperspectralBandModel {
 	

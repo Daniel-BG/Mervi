@@ -50,7 +50,6 @@ public class Window extends Application {
 		window.setResizable(true);
 		
 		//create model to be filled up
-		int bands = 40, rows = 300, cols = 600;
 		MousePosition mp = new MousePosition();
 		HyperspectralImageModel himOrig = new HyperspectralImageModel();
 		HyperspectralImageModel himComp = new HyperspectralImageModel();
@@ -329,17 +328,6 @@ public class Window extends Application {
 		
 		himOrig.colsProperty().addListener(resizeAfterModelChange);
 		himOrig.rowsProperty().addListener(resizeAfterModelChange);
-		/*************/
-		
-		/** Finally initialize model */
-		/**himOrig.setSize(bands, rows, cols);
-		himOrig.randomize(0);
-		
-		himComp.setSize(bands, rows, cols);
-		himComp.randomize(1);
-		
-		/*****************************/
-
 	}
 	
 	
