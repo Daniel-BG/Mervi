@@ -20,10 +20,6 @@ public class NumberMatrix  {
 	
 	public void set(ReadOnlyMatrix m) {
 		this.matrix = m;
-		this.maxVal = null;
-		this.minVal = null;
-		this.maxMinDiff = null;
-		this.bwImage = null;
 		this.cols.set(m.getCols());
 		this.rows.set(m.getRows());
 		this.change.update();
@@ -42,7 +38,7 @@ public class NumberMatrix  {
 		else {
 			double val = this.matrix.get(row, col);
 			val -= this.getMin();
-			val /= (double) this.maxMinDiff;
+			val /= (double) this.matrix.getMaxMinDiff();
 			return val;
 		}
 			
@@ -72,60 +68,22 @@ public class NumberMatrix  {
 	}
 
 	
-	private Integer maxVal;
-	private Integer minVal;
-	private Integer maxMinDiff;
-	private Image bwImage; //cached image for this number matrix
+
 	
 	public int getMax() {
-		if (maxVal == null)
-			recalculateMinMax();
-		return maxVal;
+		return this.matrix.getMax();
 	}
 	
 	public int getMin() {
-		if (minVal == null) 
-			recalculateMinMax();
-		return minVal;
+		return this.matrix.getMin();
 	}
 	
 	public int getMaxMinDiff() {
-		if (maxMinDiff == null)
-			recalculateMinMax();
-		return maxMinDiff;
+		return this.matrix.getMaxMinDiff();
 	}
-	
-	private void recalculateMinMax() {
-		int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-		for (int row = 0; row < this.rowsProperty().intValue(); row++) {
-			for (int col = 0; col < this.colsProperty().intValue(); col++) {
-				int data = this.matrix.get(row, col);
-				if (data > max)
-					max = data;
-				if (data < min)
-					min = data;
-			}
-		}
-		maxVal = max;
-		minVal = min;
-		maxMinDiff = max - min;
-	}
-
 	
 	public Image getImage() {
-		if (this.bwImage != null)
-			return this.bwImage;
-		
-		WritableImage wi = new WritableImage(cols.intValue(), rows.intValue());
-		PixelWriter pw = wi.getPixelWriter();
-				
-		for (int col = 0; col < cols.intValue(); col++) {
-			for (int row = 0; row < rows.intValue(); row++) {
-				pw.setColor(col, row, new Color(this.get(row, col), this.get(row, col), this.get(row, col), 1));
-			}
-		}
-		
-		return this.bwImage = wi;
+		return this.matrix.getImage();
 	}
 	
 }
