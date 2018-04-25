@@ -46,7 +46,7 @@ public class DevBase extends Application {
 	public void start(Stage window) throws Exception {
 		window.setResizable(true);
 		
-		HistogramView hv = new HistogramView();
+		HistogramView hv = new HistogramView(3);
 
 		
 
@@ -69,14 +69,29 @@ public class DevBase extends Application {
 		int yvar = r.nextInt(20) + 1;
 		int xlim = 200;
 		for (int i = 0; i < xlim; i++) {
-			hv.getSeries().getData().add(new XYChart.Data<Number, Number>(i, ybase));
+			hv.getSeries(0).getData().add(new XYChart.Data<Number, Number>(i, ybase));
 			ybase += r.nextInt(yvar) - yvar/2;
 		}
 		
 
-
+		r = new Random(2);
+		ybase = r.nextInt(100);
+		yvar = r.nextInt(20) + 1;
+		xlim = 200;
+		for (int i = 0; i < xlim; i++) {
+			hv.getSeries(1).getData().add(new XYChart.Data<Number, Number>(i, ybase));
+			ybase += r.nextInt(yvar) - yvar/2;
+		}
 		
-
+		r = new Random(4);
+		ybase = r.nextInt(100);
+		yvar = r.nextInt(20) + 1;
+		xlim = 200;
+		for (int i = 0; i < xlim; i++) {
+			hv.getSeries(2).getData().add(new XYChart.Data<Number, Number>(i, ybase));
+			ybase += r.nextInt(yvar) - yvar/2;
+		}
+		
 	
 	}
 	

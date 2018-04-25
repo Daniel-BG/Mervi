@@ -4,10 +4,11 @@ import org.controlsfx.control.RangeSlider;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
-import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.VBox;
 
 public class HistogramView extends VBox {
@@ -15,7 +16,7 @@ public class HistogramView extends VBox {
 	private AreaChart<Number, Number> chart;
 	private NumberAxis axx, axy;
 	private RangeSlider slider;
-	private XYChart.Series<Number, Number> series;
+	private InvalidationListener updateSliderOnDataChange = e -> fitSliderToData(); //listener that updates slider on data change
 	
 	public HistogramView() {
 		//create axes
@@ -28,9 +29,8 @@ public class HistogramView extends VBox {
 		chart.setLegendVisible(false);
 		chart.setCreateSymbols(false);
 		chart.setAnimated(false);
-		//create series object. When modified, this will change what appears on screen
-		series = new XYChart.Series<Number, Number>();
-		chart.getData().add(series);
+		chart.setPrefWidth(2000);
+		chart.setMaxWidth(2000);
 		
 		//create control slider
 		slider = new RangeSlider();
@@ -43,18 +43,42 @@ public class HistogramView extends VBox {
 
 		this.getChildren().addAll(chart, slider);
 
-		createDataUpdaters();
 		createSliderUpdaters();
 		createClickCtrl();
+	}
+	
+	public HistogramView(int numberOfSeries) {
+		this();
+		this.setNumberOfSeries(numberOfSeries);
+	}
+	
+	
+	public void setNumberOfSeries(int newSize) {
+		ObservableList<Series<Number, Number>> currSeries = chart.getData();
+		int currSize = currSeries.size();
+		
+		//if size is reduced simply remove
+		if (newSize < currSize) {
+			for (Series<Number, Number> series: currSeries.subList(newSize, currSize))
+				series.getData().removeListener(updateSliderOnDataChange);
+			
+			currSeries.remove(newSize, currSize);
+			return;
+		}
+		//if size is not changed ignore
+		if (newSize == currSize)
+			return;
+		//if size is increased create and add new elements
+		for (int i = currSize; i < newSize; i++) {
+			XYChart.Series<Number, Number> newSeries = new XYChart.Series<Number, Number>();
+			newSeries.getData().addListener(updateSliderOnDataChange);
+			currSeries.add(newSeries);
+		}
 	}
 	
 	
 	private void createClickCtrl() {
 		slider.setOnMouseClicked(e -> {if (e.isShiftDown()) fitSliderToData();});
-	}
-
-	private void createDataUpdaters() {
-		this.getSeries().getData().addListener((ListChangeListener<XYChart.Data<Number, Number>>) e -> fitSliderToData());
 	}
 	
 	private void createSliderUpdaters() {
@@ -73,11 +97,22 @@ public class HistogramView extends VBox {
 	
 	
 	private void fitSliderToData() {
-		if (this.getSeries().getData().isEmpty())
-			return; //do not update if empty
+		if (this.chart.getData().isEmpty())
+			return;
 		
-		double minVal = this.getSeries().getData().get(0).getXValue().doubleValue();
-		double maxVal = this.getSeries().getData().get(this.getSeries().getData().size() - 1).getXValue().doubleValue(); 
+		double minVal = Double.MAX_VALUE;
+		double maxVal = Double.MIN_VALUE;
+		boolean found = false;
+		for (XYChart.Series<Number,	Number> series: this.chart.getData()) {
+			if (series.getData().isEmpty())
+				continue;
+			found = true;
+			minVal = Math.min(minVal,  series.getData().get(0).getXValue().doubleValue());
+			maxVal = Math.max(maxVal, series.getData().get(series.getData().size() - 1).getXValue().doubleValue());
+		}
+		//just in case series are created but not filled in, avoid errors and such
+		if (!found)
+			return;
 		
 		slider.setMin(minVal);
 		slider.setMax(maxVal);
@@ -87,15 +122,15 @@ public class HistogramView extends VBox {
 	
 	
 	/**
-	 * @return the inner observable list that is to be modified if 
-	 * the histogram is required to change
+	 * @return the selected series that is shown on screen
 	 */
-	public XYChart.Series<Number, Number> getSeries() {
-		return this.series;
+	public XYChart.Series<Number, Number> getSeries(int index) {
+		return this.chart.getData().get(index);
 	}
-
+	
 	/**
 	 * @return the property tied to the lower selected bound
+	 * if set, changes the graph accordingly
 	 */
 	public DoubleProperty lowValueProperty() {
 		return this.slider.lowValueProperty();
@@ -104,6 +139,7 @@ public class HistogramView extends VBox {
 	
 	/**
 	 * @return the property tied to the upper selected bound
+	 * if set, changes the graph accordingly
 	 */
 	public DoubleProperty highValueProperty() {
 		return this.slider.highValueProperty();

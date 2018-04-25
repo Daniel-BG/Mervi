@@ -2,17 +2,16 @@ package com.mervi.view;
 
 
 import java.io.File;
-import java.util.function.Function;
-
 import com.jypec.img.HyperspectralImage;
 import com.jypec.util.io.HyperspectralImageReader;
 import com.mervi.Config;
 import com.mervi.control.MatrixViewPaneController;
 import com.mervi.model.HyperspectralDiffModel;
 import com.mervi.model.HyperspectralImageModel;
-import com.mervi.model.MousePosition;
+import com.mervi.model.ProgramProperties;
 import com.mervi.model.HyperspectralBandModel;
 import com.mervi.model.metrics.BandMetrics;
+import com.mervi.model.metrics.HistogramUtilities;
 import com.mervi.model.metrics.ImageMetrics;
 import com.mervi.model.metrics.PixelMetrics;
 
@@ -25,8 +24,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextField;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -49,7 +48,7 @@ public class Window extends Application {
 		window.setResizable(true);
 		
 		//create model to be filled up
-		MousePosition mp = new MousePosition();
+		ProgramProperties properties = new ProgramProperties();
 		HyperspectralImageModel himOrig = new HyperspectralImageModel();
 		HyperspectralImageModel himComp = new HyperspectralImageModel();
 		HyperspectralDiffModel hdm = new HyperspectralDiffModel();
@@ -103,52 +102,38 @@ public class Window extends Application {
 		final HBox compressedHBox = new HBox(compressedButton, compressedTextBox);
 		
 		/** Band selector */
-		final Spinner<Integer> spinnerRed = new Spinner<Integer>();
-		final Spinner<Integer> spinnerBlue = new Spinner<Integer>();
-		final Spinner<Integer> spinnerGreen = new Spinner<Integer>();
-		final Spinner<Integer> spinnerAll = new Spinner<Integer>();
+		final IntegerSpinnerValueFactory valueFactoryRed = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+		final IntegerSpinnerValueFactory valueFactoryGreen = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+		final IntegerSpinnerValueFactory valueFactoryBlue = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+		final IntegerSpinnerValueFactory valueFactoryAll = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+		final Spinner<Integer> spinnerRed = new ScrollSpinner<Integer>(valueFactoryRed);
+		final Spinner<Integer> spinnerBlue = new ScrollSpinner<Integer>(valueFactoryBlue);
+		final Spinner<Integer> spinnerGreen = new ScrollSpinner<Integer>(valueFactoryGreen);
+		final Spinner<Integer> spinnerAll = new ScrollSpinner<Integer>(valueFactoryAll);
+		
+
+        spinnerAll.valueProperty().addListener((e, oldVal2, newVal2) -> {
+        	valueFactoryBlue.setValue(newVal2);
+			valueFactoryRed.setValue(newVal2);
+			valueFactoryGreen.setValue(newVal2);
+        });
         
-		himOrig.bandsProperty().addListener((observable, oldVal, newVal) -> {
-			SpinnerValueFactory<Integer> valueFactoryRed = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
-			SpinnerValueFactory<Integer> valueFactoryGreen = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
-			SpinnerValueFactory<Integer> valueFactoryBlue = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
-			SpinnerValueFactory<Integer> valueFactoryAll = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newVal.intValue() - 1, 0);
-	        spinnerRed.setValueFactory(valueFactoryRed);
-	        spinnerBlue.setValueFactory(valueFactoryBlue);
-	        spinnerGreen.setValueFactory(valueFactoryGreen);
-	        spinnerAll.setValueFactory(valueFactoryAll);
-	        
-	        Function<SpinnerValueFactory<Integer>, EventHandler<? super ScrollEvent>> createScrollEventHandler = 
-	        		new Function<SpinnerValueFactory<Integer>, EventHandler<? super ScrollEvent>>() {
-				@Override
-				public EventHandler<? super ScrollEvent> apply(SpinnerValueFactory<Integer> t) {
-					return e -> {
-						if (e.getDeltaY() > 0) t.increment(((int) e.getDeltaY()) / Config.SCROLL_UNITS); 
-						else t.decrement((-(int) e.getDeltaY()) / Config.SCROLL_UNITS);
-					};
-				}
-	        };
-	        
-			spinnerRed.setOnScroll(createScrollEventHandler.apply(valueFactoryRed));
-			spinnerGreen.setOnScroll(createScrollEventHandler.apply(valueFactoryGreen));
-			spinnerBlue.setOnScroll(createScrollEventHandler.apply(valueFactoryBlue));
-			
-			spinnerAll.setOnScroll(e -> {
-				if (e.getDeltaY() > 0) spinnerAll.increment(((int) e.getDeltaY()) / Config.SCROLL_UNITS); 
-				else spinnerAll.decrement((-(int) e.getDeltaY()) / Config.SCROLL_UNITS);
-				
-				valueFactoryBlue.setValue(spinnerAll.getValue());
-				valueFactoryRed.setValue(spinnerAll.getValue());
-				valueFactoryGreen.setValue(spinnerAll.getValue());
-			});
-		});
+        himOrig.modelChangedProperty().addListener(e -> {
+            valueFactoryRed.maxProperty().setValue(himOrig.getBands() - 1);
+            valueFactoryGreen.maxProperty().setValue(himOrig.getBands() - 1);
+            valueFactoryBlue.maxProperty().setValue(himOrig.getBands() - 1);
+            valueFactoryAll.maxProperty().setValue(himOrig.getBands() - 1);
+        });
+        
+
+
 		
         Label coordLabel = new Label(" @(x, x)");
         InvalidationListener mpChangedCoord = e -> {
-        	coordLabel.setText(" @: (" + mp.rowProperty().intValue() + "," + mp.colProperty().intValue() + ")");
+        	coordLabel.setText(" @: (" + properties.rowProperty().intValue() + "," + properties.colProperty().intValue() + ")");
         };
-        mp.colProperty().addListener(mpChangedCoord);
-        mp.rowProperty().addListener(mpChangedCoord);
+        properties.colProperty().addListener(mpChangedCoord);
+        properties.rowProperty().addListener(mpChangedCoord);
         coordLabel.setMinWidth(80);
         
         HBox bandSelector = new HBox(new FWLabel("red"), spinnerRed, new FWLabel("Green"), spinnerGreen, new FWLabel("Blue"), spinnerBlue, coordLabel, spinnerAll);
@@ -180,8 +165,8 @@ public class Window extends Application {
         //pixel:
         Label pixelMetrics = new Label();
         InvalidationListener pixelMetricRefresher = e -> {
-        	int row = mp.rowProperty().intValue();
-        	int col = mp.colProperty().intValue();
+        	int row = properties.rowProperty().intValue();
+        	int col = properties.colProperty().intValue();
         	int band = spinnerRed.valueProperty().getValue().intValue();
         	int originalPix, compressedPix;
         	try {
@@ -202,8 +187,8 @@ public class Window extends Application {
         			" DIFF: " + diff);
         };
         
-        mp.rowProperty().addListener(pixelMetricRefresher);
-        mp.colProperty().addListener(pixelMetricRefresher);
+        properties.rowProperty().addListener(pixelMetricRefresher);
+        properties.colProperty().addListener(pixelMetricRefresher);
         spinnerRed.valueProperty().addListener(pixelMetricRefresher);
         himOrig.modelChangedProperty().addListener(pixelMetricRefresher);
         himComp.modelChangedProperty().addListener(pixelMetricRefresher);
@@ -282,7 +267,7 @@ public class Window extends Application {
 		
 		/** this creates one view */
 		MatrixViewPane mvpOrig = new MatrixViewPane();
-		MatrixViewPaneController mvpcOrig = new MatrixViewPaneController(himOrig, mvpOrig, mp);
+		MatrixViewPaneController mvpcOrig = new MatrixViewPaneController(himOrig, mvpOrig, properties);
 		mvpcOrig.selectedRIndexProperty().bind(spinnerRed.valueProperty());
 		mvpcOrig.selectedGIndexProperty().bind(spinnerGreen.valueProperty());
 		mvpcOrig.selectedBIndexProperty().bind(spinnerBlue.valueProperty());
@@ -293,7 +278,7 @@ public class Window extends Application {
 		
 		/** and another one */
 		MatrixViewPane mvpComp = new MatrixViewPane();
-		MatrixViewPaneController mvpcComp = new MatrixViewPaneController(himComp, mvpComp, mp);
+		MatrixViewPaneController mvpcComp = new MatrixViewPaneController(himComp, mvpComp, properties);
 		mvpcComp.selectedRIndexProperty().bind(spinnerRed.valueProperty());
 		mvpcComp.selectedGIndexProperty().bind(spinnerGreen.valueProperty());
 		mvpcComp.selectedBIndexProperty().bind(spinnerBlue.valueProperty());
@@ -306,7 +291,7 @@ public class Window extends Application {
 		
 		/** and another one */
 		MatrixViewPane mvpDiff = new MatrixViewPane();
-		MatrixViewPaneController mvpcDiff = new MatrixViewPaneController(hdm, mvpDiff, mp);
+		MatrixViewPaneController mvpcDiff = new MatrixViewPaneController(hdm, mvpDiff, properties);
 		mvpcDiff.selectedRIndexProperty().bind(spinnerRed.valueProperty());
 		mvpcDiff.selectedGIndexProperty().bind(spinnerGreen.valueProperty());
 		mvpcDiff.selectedBIndexProperty().bind(spinnerBlue.valueProperty());
@@ -329,8 +314,8 @@ public class Window extends Application {
 		ibvDiffBlue.integerValueProperty().bind(mvpcDiff.selectedBValueProperty());
 		
 		InvalidationListener resizeAfterModelChange = e -> {
-			int newrows = himOrig.rowsProperty().intValue();
-			int newcols = himOrig.colsProperty().intValue();
+			int newrows = himOrig.getRows();
+			int newcols = himOrig.getCols();
 			mvsComp.setWidth(newcols*Config.DEFAULT_PIXEL_SIZE);
 			mvsComp.setHeight(newrows*Config.DEFAULT_PIXEL_SIZE);
 			mvsOrig.setWidth(newcols*Config.DEFAULT_PIXEL_SIZE);
@@ -339,8 +324,43 @@ public class Window extends Application {
 			mvsDiff.setHeight(newrows*Config.DEFAULT_PIXEL_SIZE);
 		};
 		
-		himOrig.colsProperty().addListener(resizeAfterModelChange);
-		himOrig.rowsProperty().addListener(resizeAfterModelChange);
+		himOrig.modelChangedProperty().addListener(resizeAfterModelChange);
+		
+		/**Stage histogramStage = new Stage();
+		HistogramView hvOrig = new HistogramView(3);
+		HistogramView hvComp = new HistogramView(3);
+		HistogramView hvDiff = new HistogramView(3);
+		HBox hbHisto = new HBox(hvOrig);
+
+		Scene histogramScene = new Scene(hbHisto, 1200, 300);
+		histogramStage.setScene(histogramScene);
+		histogramStage.setTitle("Histograms");
+		histogramStage.show();
+		
+		InvalidationListener histogramRefresher = e -> {
+			int bandRIndex = spinnerRed.valueProperty().getValue().intValue();
+			int bandGIndex = spinnerGreen.valueProperty().getValue().intValue();
+			int bandBIndex = spinnerBlue.valueProperty().getValue().intValue();
+        	HyperspectralBandModel bandR, bandG, bandB;
+        	try {
+        		bandR = himOrig.getBand(bandRIndex);
+        		bandG = himOrig.getBand(bandGIndex);
+        		bandB = himOrig.getBand(bandBIndex);
+        	} catch (Exception ex) {
+        		return; //if one image has updated and the other hasn't, avoid conflicts
+        	}
+        	
+        	HistogramUtilities.getHistogramFor(bandR, hvOrig.getSeries(0).getData());
+        	HistogramUtilities.getHistogramFor(bandG, hvOrig.getSeries(1).getData());
+        	HistogramUtilities.getHistogramFor(bandB, hvOrig.getSeries(2).getData());
+			
+		};
+		
+		spinnerRed.valueProperty().addListener(histogramRefresher);
+		spinnerGreen.valueProperty().addListener(histogramRefresher);
+		spinnerBlue.valueProperty().addListener(histogramRefresher);*/
+		
+		
 	}
 	
 	

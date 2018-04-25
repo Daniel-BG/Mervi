@@ -2,38 +2,46 @@ package com.mervi.model;
 
 import com.mervi.control.ObjectChangedProperty;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-
 public abstract class AbstractHyperspectralImageModel {
-
-	private IntegerProperty bands, rows, cols;
+	
+	private int bands, rows, cols;
 	private ObjectChangedProperty modelChanged; //updated when the values change
 	private HyperspectralBandModel[] bandCache;
 	
-	{
-		this.bands = new SimpleIntegerProperty();
-		this.rows = new SimpleIntegerProperty();
-		this.cols = new SimpleIntegerProperty();
-	
+	{	
 		this.modelChanged = new ObjectChangedProperty();
 		
 		this.modelChanged.addListener(e -> {
-			bandCache = new HyperspectralBandModel[this.bandsProperty().intValue()];
+			bandCache = new HyperspectralBandModel[this.bands];
 			this.average = null;
 			this.variance = null;
 		});
 	}
 	
-	public IntegerProperty rowsProperty() {
+	public void setSize(int bands, int rows, int cols, boolean update) {
+		this.bands = bands;
+		this.rows = rows;
+		this.cols = cols;
+		this.doSetSize();
+		if (update)
+			this.modelChangedProperty().update();
+	}
+	
+	/**
+	 * called after changing bands, rows, and cols, but before updating modelChangedProperty()
+	 */
+	protected abstract void doSetSize();
+	
+	
+	public int getRows() {
 		return this.rows;
 	}
 	
-	public IntegerProperty colsProperty() {
+	public int getCols() {
 		return this.cols;
 	}
 	
-	public IntegerProperty bandsProperty() {
+	public int getBands() {
 		return this.bands;
 	}
 	
@@ -61,9 +69,9 @@ public abstract class AbstractHyperspectralImageModel {
 	
 	
 	public boolean sizeEquals(AbstractHyperspectralImageModel other) {
-		return this.rowsProperty().intValue() == other.rowsProperty().intValue()
-				&& this.colsProperty().intValue() == other.colsProperty().intValue()
-				&& this.bandsProperty().intValue() == other.bandsProperty().intValue()
+		return this.getRows() == other.getRows()
+				&& this.getCols() == other.getCols()
+				&& this.getBands() == other.getBands()
 				&& this.getRange() == other.getRange();
 	}
 	
@@ -78,16 +86,16 @@ public abstract class AbstractHyperspectralImageModel {
 		double localavg = this.average();
 
 		double acc = 0;
-		for (int band = 0; band < bandsProperty().intValue(); band++) {
-			for (int row = 0; row < rowsProperty().intValue(); row++) {
-				for (int col = 0; col < colsProperty().intValue(); col++) {
+		for (int band = 0; band < getBands(); band++) {
+			for (int row = 0; row < getRows(); row++) {
+				for (int col = 0; col < getCols(); col++) {
 					double val = (double) this.getValue(band, row, col) - localavg;
 					acc += val * val;
 				}
 			}	
 		}
 		
-		return variance = acc / ((double) bandsProperty().intValue() * rowsProperty().intValue() * colsProperty().intValue());
+		return variance = acc / ((double) getBands() * getCols() * getRows());
 	}
 	
 	public double average() {
@@ -96,15 +104,15 @@ public abstract class AbstractHyperspectralImageModel {
 		
 		double acc = 0;
 		
-		for (int band = 0; band < bandsProperty().intValue(); band++) {
-			for (int row = 0; row < rowsProperty().intValue(); row++) {
-				for (int col = 0; col < colsProperty().intValue(); col++) {
+		for (int band = 0; band < getBands(); band++) {
+			for (int row = 0; row < getRows(); row++) {
+				for (int col = 0; col <getCols(); col++) {
 					acc += (double) this.getValue(band, row, col);
 				}
 			}	
 		}
 		
-		return average = acc / ((double) bandsProperty().intValue() * rowsProperty().intValue() * colsProperty().intValue());
+		return average = acc / ((double) getBands() * getCols() * getRows());
 	}
 	
 }

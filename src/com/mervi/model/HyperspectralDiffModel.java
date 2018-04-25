@@ -10,12 +10,11 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 		//assign
 		this.source1 = source1;
 		this.source2 = source2;
-		//tie to source1, source2 should follow
-		this.bandsProperty().bind(source1.bandsProperty());
-		this.rowsProperty().bind(source1.rowsProperty());
-		this.colsProperty().bind(source1.colsProperty());
 		//this updates when the base images update
-		source1.modelChangedProperty().addListener(e -> this.modelChangedProperty().update());
+		source1.modelChangedProperty().addListener(e -> {
+			this.modelChangedProperty().update();
+			this.setSize(source1.getBands(), source1.getRows(), source1.getCols(), true);
+		});
 		source2.modelChangedProperty().addListener(e -> this.modelChangedProperty().update());
 		this.modelChangedProperty().update();
 	}
@@ -28,30 +27,30 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 	@Override
 	public HyperspectralBandModel doGetBand(int index) {
 		//check dimensions
-		if (source1.bandsProperty().intValue() != source2.bandsProperty().intValue() ||
-			source1.rowsProperty().intValue() != source2.rowsProperty().intValue() ||
-			source1.colsProperty().intValue() != source2.colsProperty().intValue() ||
+		if (source1.getBands() != source2.getBands() ||
+			source1.getRows() != source2.getRows() ||
+			source1.getCols() != source2.getCols() ||
 			(source1.getRange() != source2.getRange()))
 			throw new IllegalStateException("Images cannot be of different sizes" 
-					+ source1.bandsProperty().intValue() + ","
-					+ source1.rowsProperty().intValue() + ","
-					+ source1.colsProperty().intValue() + ","
+					+ source1.getBands() + ","
+					+ source1.getRows() + ","
+					+ source1.getCols() + ","
 					+ source1.getRange() + ","
-					+ source2.bandsProperty().intValue() + ","
-					+ source2.rowsProperty().intValue() + ","
-					+ source2.colsProperty().intValue() + ","
+					+ source2.getBands() + ","
+					+ source2.getRows() + ","
+					+ source2.getCols() + ","
 					+ source2.getRange());
 		
 		return new HyperspectralBandModel() {
 			
 			@Override
 			public int getRows() {
-				return source1.rowsProperty().intValue();
+				return source1.getRows();
 			}
 			
 			@Override
 			public int getCols() {
-				return source1.colsProperty().intValue();
+				return source1.getCols();
 			}
 			
 			@Override
@@ -76,6 +75,11 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 	@Override
 	public int getRange() {
 		return source1.getRange();
+	}
+
+	@Override
+	protected void doSetSize() {
+		//nothing to do
 	}
 
 }

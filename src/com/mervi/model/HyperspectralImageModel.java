@@ -17,30 +17,22 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 		//hence the range force
 		this.setRange(0x1 << 16);
 	}
-
 	
-	public void setSize(int bands, int rows, int cols) {
-		this.changeDimensions(bands, rows, cols);
-		this.modelChangedProperty().update();
-	}
-	
-	private void changeDimensions(int bands, int rows, int cols) {
-		this.values = new int[bands][rows][cols];
-		this.bandsProperty().set(bands);
-		this.rowsProperty().set(rows);
-		this.colsProperty().set(cols);
+	@Override
+	protected void doSetSize() {
+		this.values = new int[getBands()][getRows()][getCols()];
 		this.available = true;
 	}
-	
+
 	private void setRange(int range) {
 		this.range = range;
 	}
 	
 	public void randomize(long seed) {
 		Random r = new Random(seed);
-		for (int i = 0; i < bandsProperty().intValue(); i++) {
-			for (int j = 0; j < rowsProperty().intValue(); j++) {
-				for (int k = 0; k < colsProperty().intValue(); k++) {
+		for (int i = 0; i < getBands(); i++) {
+			for (int j = 0; j < getRows(); j++) {
+				for (int k = 0; k < getCols(); k++) {
 					this.unsafeSetValue(i, j, k, r.nextInt(range));
 				}
 			}
@@ -51,13 +43,10 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 	
 	public void setFromImage(HyperspectralImage image) {
 		HyperspectralImageData data = image.getData();
-		int bands = data.getNumberOfBands();
-		int rows = data.getNumberOfLines();
-		int cols = data.getNumberOfSamples();
-		this.changeDimensions(bands, rows, cols);
-		for (int band = 0; band < bands; band++) {
-			for (int row = 0; row < rows; row++) {
-				for (int col = 0; col < cols; col++) {
+		this.setSize(data.getNumberOfBands(), data.getNumberOfLines(), data.getNumberOfSamples(), false);
+		for (int band = 0; band < getBands(); band++) {
+			for (int row = 0; row < getRows(); row++) {
+				for (int col = 0; col < getCols(); col++) {
 					this.values[band][row][col] = data.getDataAt(band, row, col);
 				}
 			}
@@ -92,7 +81,7 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 	
 	private void checkBounds(int band, int row, int col) {
 		if (band < 0 || row < 0 || col < 0 || 
-				band >= bandsProperty().intValue() || row >= rowsProperty().intValue() || col >= colsProperty().intValue())
+				band >= getBands() || row >= getRows() || col >= getCols())
 			throw new IllegalArgumentException("Index out of bounds");
 	}
 	
@@ -106,12 +95,12 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 		return new HyperspectralBandModel() {
 			@Override
 			public int getRows() {
-				return rowsProperty().intValue();
+				return HyperspectralImageModel.this.getRows();
 			}
 
 			@Override
 			public int getCols() {
-				return colsProperty().intValue();
+				return HyperspectralImageModel.this.getCols();
 			}
 
 			@Override
@@ -134,5 +123,6 @@ public class HyperspectralImageModel extends AbstractHyperspectralImageModel {
 	public int getRange() {
 		return range;
 	}
-	
+
+
 }

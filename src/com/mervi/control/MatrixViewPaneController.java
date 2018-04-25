@@ -1,7 +1,7 @@
 package com.mervi.control;
 
 import com.mervi.model.AbstractHyperspectralImageModel;
-import com.mervi.model.MousePosition;
+import com.mervi.model.ProgramProperties;
 import com.mervi.view.MatrixViewPane;
 
 import javafx.beans.InvalidationListener;
@@ -17,7 +17,7 @@ public class MatrixViewPaneController {
 
 	private AbstractHyperspectralImageModel him;
 	private MatrixViewPane mvp;
-	private MousePosition mp;
+	private ProgramProperties mp;
 	
 	private IntegerProperty selectedRIndex = new SimpleIntegerProperty(0);
 	private IntegerProperty selectedGIndex = new SimpleIntegerProperty(0);
@@ -26,7 +26,7 @@ public class MatrixViewPaneController {
 	private IntegerProperty selectedGValue = new SimpleIntegerProperty(0);
 	private IntegerProperty selectedBValue = new SimpleIntegerProperty(0);
 	
-	public MatrixViewPaneController(AbstractHyperspectralImageModel him, MatrixViewPane mvp, MousePosition mp) {
+	public MatrixViewPaneController(AbstractHyperspectralImageModel him, MatrixViewPane mvp, ProgramProperties mp) {
 		this.him = him;
 		this.mvp = mvp;
 		this.mp = mp;
@@ -43,8 +43,8 @@ public class MatrixViewPaneController {
 			double relxpos = e.getSceneX() / mvp.getSelector().getWidth();
 			double relypos = e.getSceneY() / mvp.getSelector().getHeight();
 			
-			int realxpos = (int) (him.colsProperty().floatValue() * relxpos);
-			int realypos = (int) (him.rowsProperty().floatValue() * relypos);
+			int realxpos = (int) ((double) him.getCols() * relxpos);
+			int realypos = (int) ((double) him.getRows() * relypos);
 			
 			mp.colProperty().set(realxpos);
 			mp.rowProperty().set(realypos);
@@ -57,9 +57,9 @@ public class MatrixViewPaneController {
 			if (!him.available())
 				return;
 			//just in case a different selector is getting us out of bounds
-			int rowIndex = Math.min(him.rowsProperty().intValue() - 1, mp.rowProperty().intValue());
-			int colIndex = Math.min(him.colsProperty().intValue() - 1, mp.colProperty().intValue());
-			int maxBand = him.bandsProperty().intValue() - 1;
+			int rowIndex = Math.min(him.getRows() - 1, mp.rowProperty().intValue());
+			int colIndex = Math.min(him.getCols() - 1, mp.colProperty().intValue());
+			int maxBand = him.getBands() - 1;
 			//now select the proper cell
 			this.selectedRValue.set(him.getBand(Math.min(maxBand, this.selectedRIndexProperty().intValue())).get(rowIndex, colIndex));
 			this.selectedGValue.set(him.getBand(Math.min(maxBand, this.selectedGIndexProperty().intValue())).get(rowIndex, colIndex));
@@ -72,8 +72,11 @@ public class MatrixViewPaneController {
 		this.selectedBIndexProperty().addListener(il);
 		this.selectedGIndexProperty().addListener(il);
 		
-		mvp.getSelector().numRowsProperty().bind(him.rowsProperty());
-		mvp.getSelector().numColsProperty().bind(him.colsProperty());
+		him.modelChangedProperty().addListener(e -> {
+			mvp.getSelector().numRowsProperty().setValue(him.getRows());
+			mvp.getSelector().numColsProperty().setValue(him.getCols());
+		});
+		
 		mvp.getSelector().selectedColProperty().bind(mp.colProperty());
 		mvp.getSelector().selectedRowProperty().bind(mp.rowProperty());
 		mvp.getSelector().selectedXPosProperty().bind(mp.xPosProperty());
