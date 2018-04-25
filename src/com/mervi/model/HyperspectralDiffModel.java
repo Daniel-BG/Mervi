@@ -70,7 +70,7 @@ public class HyperspectralDiffModel extends AbstractHyperspectralImageModel {
 
 	@Override
 	public boolean available() {
-		return source1 != null && source2 != null && source1.available() && source2.available();
+		return source1 != null && source2 != null && source1.available() && source2.available() && source1.sizeEquals(source2);
 	}
 
 	@Override

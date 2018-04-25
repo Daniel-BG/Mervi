@@ -2,7 +2,6 @@ package com.mervi.view;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.function.Function;
 
 import com.jypec.img.HyperspectralImage;
@@ -74,7 +73,7 @@ public class Window extends Application {
 				originalTextBox.setText(f.toString());
 				HyperspectralImage hi = HyperspectralImageReader.read(f.toString(), true);
 				himOrig.setFromImage(hi);
-			} catch (IOException e1) {
+			} catch (Exception e1) {
 				System.out.println("Did not load image");
 			}
 		});
@@ -95,8 +94,8 @@ public class Window extends Application {
 				compressedTextBox.setText(f.toString());	
 				HyperspectralImage hi = HyperspectralImageReader.read(f.toString(), true);
 				himComp.setFromImage(hi);
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			} catch (Exception e1) {
+				System.out.println("Did not load image");
 			}
 						
 					
@@ -219,6 +218,8 @@ public class Window extends Application {
         	} catch (Exception ex) {
         		return; //if one image has updated and the other hasn't, avoid conflicts
         	}
+        	if (!romOrig.sizeEquals(romComp))
+        		return; //two different sizes loaded
         	
         	double maxse = BandMetrics.maxSE(romOrig, romComp);
         	double mse = BandMetrics.MSE(romOrig, romComp);

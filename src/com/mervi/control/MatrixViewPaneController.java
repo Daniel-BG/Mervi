@@ -56,9 +56,14 @@ public class MatrixViewPaneController {
 		InvalidationListener il = e -> {
 			if (!him.available())
 				return;
-			this.selectedRValue.set(him.getBand(this.selectedRIndexProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
-			this.selectedGValue.set(him.getBand(this.selectedGIndexProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
-			this.selectedBValue.set(him.getBand(this.selectedBIndexProperty().intValue()).get(mp.rowProperty().intValue(), mp.colProperty().intValue()));
+			//just in case a different selector is getting us out of bounds
+			int rowIndex = Math.min(him.rowsProperty().intValue() - 1, mp.rowProperty().intValue());
+			int colIndex = Math.min(him.colsProperty().intValue() - 1, mp.colProperty().intValue());
+			int maxBand = him.bandsProperty().intValue() - 1;
+			//now select the proper cell
+			this.selectedRValue.set(him.getBand(Math.min(maxBand, this.selectedRIndexProperty().intValue())).get(rowIndex, colIndex));
+			this.selectedGValue.set(him.getBand(Math.min(maxBand, this.selectedGIndexProperty().intValue())).get(rowIndex, colIndex));
+			this.selectedBValue.set(him.getBand(Math.min(maxBand, this.selectedBIndexProperty().intValue())).get(rowIndex, colIndex));
 		};
 		
 		mp.rowProperty().addListener(il);
