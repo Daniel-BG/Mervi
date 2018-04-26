@@ -7,11 +7,10 @@ import com.jypec.util.io.HyperspectralImageReader;
 import com.mervi.Config;
 import com.mervi.control.MatrixViewPaneController;
 import com.mervi.model.HyperspectralDiffModel;
-import com.mervi.model.HyperspectralImageModel;
+import com.mervi.model.ConcreteHyperspectralImageModel;
 import com.mervi.model.ProgramProperties;
 import com.mervi.model.HyperspectralBandModel;
 import com.mervi.model.metrics.BandMetrics;
-import com.mervi.model.metrics.HistogramUtilities;
 import com.mervi.model.metrics.ImageMetrics;
 import com.mervi.model.metrics.PixelMetrics;
 
@@ -49,8 +48,8 @@ public class Window extends Application {
 		
 		//create model to be filled up
 		ProgramProperties properties = new ProgramProperties();
-		HyperspectralImageModel himOrig = new HyperspectralImageModel();
-		HyperspectralImageModel himComp = new HyperspectralImageModel();
+		ConcreteHyperspectralImageModel himOrig = new ConcreteHyperspectralImageModel();
+		ConcreteHyperspectralImageModel himComp = new ConcreteHyperspectralImageModel();
 		HyperspectralDiffModel hdm = new HyperspectralDiffModel();
 		hdm.setSources(himOrig, himComp);
 		

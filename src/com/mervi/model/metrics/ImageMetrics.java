@@ -1,25 +1,25 @@
 package com.mervi.model.metrics;
 
-import com.mervi.model.AbstractHyperspectralImageModel;
+import com.mervi.model.HyperspectralImageModel;
 
 public class ImageMetrics {
 	
-	private static void sanityCheck(AbstractHyperspectralImageModel ahima, AbstractHyperspectralImageModel ahimb) {
+	private static void sanityCheck(HyperspectralImageModel ahima, HyperspectralImageModel ahimb) {
 		if (!ahima.sizeEquals(ahimb))
 			throw new IllegalArgumentException("Size must be equal");
 	}
 	
-	public static double PSNR(AbstractHyperspectralImageModel ahima, AbstractHyperspectralImageModel ahimb) {
+	public static double PSNR(HyperspectralImageModel ahima, HyperspectralImageModel ahimb) {
 		sanityCheck(ahima, ahimb);
 		return MetricUtilities.PSNR(MSE(ahima, ahimb), ahima.getRange());
 	}
 	
-	public static double SNR(AbstractHyperspectralImageModel ahima, AbstractHyperspectralImageModel ahimb) {
+	public static double SNR(HyperspectralImageModel ahima, HyperspectralImageModel ahimb) {
 		sanityCheck(ahima, ahimb);
-		return (double) (10 * Math.log10(ahima.variance() / MSE(ahima, ahimb)));
+		return (double) (10 * Math.log10(ahima.getStatistics().variance() / MSE(ahima, ahimb)));
 	}
 	
-	public static double MSE(AbstractHyperspectralImageModel ahima, AbstractHyperspectralImageModel ahimb) {
+	public static double MSE(HyperspectralImageModel ahima, HyperspectralImageModel ahimb) {
 		sanityCheck(ahima, ahimb);
 		
 		double acc = 0;
@@ -36,7 +36,7 @@ public class ImageMetrics {
 		return acc / ((double) ahima.getBands() * ahima.getRows() * ahima.getCols());
 	}
 	
-	public static double maxSE (AbstractHyperspectralImageModel ahima, AbstractHyperspectralImageModel ahimb) {
+	public static double maxSE (HyperspectralImageModel ahima, HyperspectralImageModel ahimb) {
 		sanityCheck(ahima, ahimb);
 		
 		double res = Double.MIN_VALUE;
