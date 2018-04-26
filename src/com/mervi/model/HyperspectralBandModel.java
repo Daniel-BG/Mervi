@@ -1,5 +1,11 @@
 package com.mervi.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.collections.ObservableList;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -120,6 +126,31 @@ public abstract class HyperspectralBandModel {
 		}
 		
 		return this.bwImage = wi;
+	}
+	
+	List<Data<Number, Number>> bandData;
+
+	public void setHistogramIn(ObservableList<Data<Number, Number>> target) {
+		target.clear();
+		if (bandData == null) {
+			int diff = 0;
+			int[] buckets = new int[this.range()];
+			for (int i = 0; i < this.getRows(); i++) {
+				for (int j = 0; j < this.getCols(); j++) {
+					if (buckets[this.get(i,  j)] == 0)
+						diff++;
+					buckets[this.get(i, j)]++;
+				}
+			}
+			bandData = new ArrayList<Data<Number, Number>>(diff);
+			for (int i = 0; i < buckets.length; i++) {
+				if (buckets[i] > 0)
+					bandData.add(new XYChart.Data<Number, Number>(i, buckets[i]));
+			}
+			
+		}
+		
+		target.addAll(bandData);
 	}
 	
 

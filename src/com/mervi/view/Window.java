@@ -326,7 +326,7 @@ public class Window extends Application {
 		
 		himOrig.modelChangedProperty().addListener(resizeAfterModelChange);
 		
-		/**Stage histogramStage = new Stage();
+		Stage histogramStage = new Stage();
 		HistogramView hvOrig = new HistogramView(3);
 		HistogramView hvComp = new HistogramView(3);
 		HistogramView hvDiff = new HistogramView(3);
@@ -350,15 +350,18 @@ public class Window extends Application {
         		return; //if one image has updated and the other hasn't, avoid conflicts
         	}
         	
-        	HistogramUtilities.getHistogramFor(bandR, hvOrig.getSeries(0).getData());
-        	HistogramUtilities.getHistogramFor(bandG, hvOrig.getSeries(1).getData());
-        	HistogramUtilities.getHistogramFor(bandB, hvOrig.getSeries(2).getData());
+        	bandR.setHistogramIn(hvOrig.getSeries(0).getData());
+        	bandG.setHistogramIn(hvOrig.getSeries(1).getData());
+        	bandB.setHistogramIn(hvOrig.getSeries(2).getData());
+        	//HistogramUtilities.getHistogramFor(bandR, hvOrig.getSeries(0).getData());
+        	//HistogramUtilities.getHistogramFor(bandG, hvOrig.getSeries(1).getData());
+        	//HistogramUtilities.getHistogramFor(bandB, hvOrig.getSeries(2).getData());
 			
 		};
 		
 		spinnerRed.valueProperty().addListener(histogramRefresher);
 		spinnerGreen.valueProperty().addListener(histogramRefresher);
-		spinnerBlue.valueProperty().addListener(histogramRefresher);*/
+		spinnerBlue.valueProperty().addListener(histogramRefresher);
 		
 		
 	}
