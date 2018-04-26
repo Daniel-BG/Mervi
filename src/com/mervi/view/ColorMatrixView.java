@@ -1,9 +1,10 @@
 package com.mervi.view;
 
+import com.mervi.model.HyperspectralBandModel;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
@@ -18,6 +19,10 @@ public class ColorMatrixView extends Group {
 	private ImageView imageViewGreen = new ImageView();
 	private ImageView imageViewBlue = new ImageView();
 	
+	private SimpleObjectProperty<HyperspectralBandModel> redBandProperty = new SimpleObjectProperty<HyperspectralBandModel>();
+	private SimpleObjectProperty<HyperspectralBandModel> greenBandProperty = new SimpleObjectProperty<HyperspectralBandModel>();
+	private SimpleObjectProperty<HyperspectralBandModel> blueBandProperty = new SimpleObjectProperty<HyperspectralBandModel>();
+	
 	{
 		imageViewRed.setBlendMode(BlendMode.RED);
 		imageViewGreen.setBlendMode(BlendMode.GREEN);
@@ -26,20 +31,14 @@ public class ColorMatrixView extends Group {
 		this.setCache(true);
 	}
 	
+	public ColorMatrixView() {
+		this.redBandProperty().addListener((o, oldVal, newVal) -> imageViewRed.setImage(newVal.getStatistics().getImage()));
+		this.greenBandProperty().addListener((o, oldVal, newVal) -> imageViewGreen.setImage(newVal.getStatistics().getImage()));
+		this.blueBandProperty().addListener((o, oldVal, newVal) -> imageViewBlue.setImage(newVal.getStatistics().getImage()));
+	}
+	
 	/**************/
 	/** Controls **/
-	public void setRedComponent(Image red) {
-		imageViewRed.setImage(red);
-	}
-	
-	public void setGreenComponent(Image green) {
-		imageViewGreen.setImage(green);
-	}
-	
-	public void setBlueComponent(Image blue) {
-		imageViewBlue.setImage(blue);
-	}
-	
 	public void bindDimensionsTo(ReadOnlyDoubleProperty widthProperty, ReadOnlyDoubleProperty heightProperty) {
 		this.imageViewBlue.fitWidthProperty().bind(widthProperty);
 		this.imageViewGreen.fitWidthProperty().bind(widthProperty);
@@ -48,4 +47,19 @@ public class ColorMatrixView extends Group {
 		this.imageViewGreen.fitHeightProperty().bind(heightProperty);
 		this.imageViewRed.fitHeightProperty().bind(heightProperty);
 	}
+	
+	
+	public SimpleObjectProperty<HyperspectralBandModel> redBandProperty() {
+		return this.redBandProperty;
+	}
+	
+	public SimpleObjectProperty<HyperspectralBandModel> greenBandProperty() {
+		return this.greenBandProperty;
+	}
+	
+	public SimpleObjectProperty<HyperspectralBandModel> blueBandProperty() {
+		return this.blueBandProperty;
+	}
+	
+	
 }

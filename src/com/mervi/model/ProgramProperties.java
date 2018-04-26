@@ -1,21 +1,43 @@
 package com.mervi.model;
 
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 
 public class ProgramProperties {
 	
 	private final IntegerProperty col = new SimpleIntegerProperty();
 	private final IntegerProperty row = new SimpleIntegerProperty();
-	private final DoubleProperty xPos = new SimpleDoubleProperty();
-	private final DoubleProperty yPos = new SimpleDoubleProperty();
-	private final IntegerProperty redIndex = new SimpleIntegerProperty();
-	private final IntegerProperty blueIndex = new SimpleIntegerProperty();
-	private final IntegerProperty greenIndex = new SimpleIntegerProperty();
+	private final IntegerProperty maxCol = new SimpleIntegerProperty();
+	private final IntegerProperty maxRow = new SimpleIntegerProperty();
+	
+	private final IntegerSpinnerValueFactory valueFactoryRed = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+	private final IntegerSpinnerValueFactory valueFactoryGreen = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+	private final IntegerSpinnerValueFactory valueFactoryBlue = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+	private final IntegerSpinnerValueFactory valueFactoryAll = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+
 	private final IntegerProperty minIndex = new SimpleIntegerProperty();
 	private final IntegerProperty maxIndex = new SimpleIntegerProperty();
+	
+	
+	public ProgramProperties() {
+		valueFactoryRed.minProperty().bind(minIndexProperty());
+		valueFactoryRed.maxProperty().bind(maxIndexProperty());
+		valueFactoryGreen.minProperty().bind(minIndexProperty());
+		valueFactoryGreen.maxProperty().bind(maxIndexProperty());
+		valueFactoryBlue.minProperty().bind(minIndexProperty());
+		valueFactoryBlue.maxProperty().bind(maxIndexProperty());
+		valueFactoryAll.minProperty().bind(minIndexProperty());
+		valueFactoryAll.maxProperty().bind(maxIndexProperty());
+		
+		//bind values to full controller
+        valueFactoryAll.valueProperty().addListener((e, oldVal, newVal) -> {
+        	valueFactoryBlue.setValue(newVal);
+        	valueFactoryRed.setValue(newVal);
+        	valueFactoryGreen.setValue(newVal);
+        });
+	}
 	
 	
 	public IntegerProperty colProperty() {
@@ -26,24 +48,28 @@ public class ProgramProperties {
 		return this.row;
 	}
 	
-	public DoubleProperty xPosProperty() {
-		return this.xPos;
+	public IntegerProperty maxColProperty() {
+		return this.maxCol;
 	}
 	
-	public DoubleProperty yPosProperty() {
-		return this.yPos;
+	public IntegerProperty maxRowProperty() {
+		return this.maxRow;
 	}
 	
-	public IntegerProperty redIndexProperty() {
-		return this.redIndex;
+	public IntegerSpinnerValueFactory valueFactoryRedProperty() {
+		return this.valueFactoryRed;
 	}
 	
-	public IntegerProperty greenIndexProperty() {
-		return this.greenIndex;
+	public IntegerSpinnerValueFactory valueFactoryGreenProperty() {
+		return this.valueFactoryGreen;
 	}
 	
-	public IntegerProperty blueIndexProperty() {
-		return this.blueIndex;
+	public IntegerSpinnerValueFactory valueFactoryBlueProperty() {
+		return this.valueFactoryBlue;
+	}
+	
+	public IntegerSpinnerValueFactory valueFactoryAllProperty() {
+		return this.valueFactoryAll;
 	}
 	
 	public IntegerProperty minIndexProperty() {

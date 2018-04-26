@@ -6,7 +6,9 @@ import com.jypec.img.HyperspectralImage;
 import com.jypec.util.io.HyperspectralImageReader;
 import com.mervi.Config;
 import com.mervi.control.MatrixViewPaneController;
+import com.mervi.control.ProgramController;
 import com.mervi.model.HyperspectralDiffModel;
+import com.mervi.model.HyperspectralImageModel;
 import com.mervi.model.ConcreteHyperspectralImageModel;
 import com.mervi.model.ProgramProperties;
 import com.mervi.model.HyperspectralBandModel;
@@ -48,12 +50,8 @@ public class Window extends Application {
 		
 		//create model to be filled up
 		ProgramProperties properties = new ProgramProperties();
-		ConcreteHyperspectralImageModel himOrig = new ConcreteHyperspectralImageModel();
-		ConcreteHyperspectralImageModel himComp = new ConcreteHyperspectralImageModel();
-		HyperspectralDiffModel hdm = new HyperspectralDiffModel();
-		hdm.setSources(himOrig, himComp);
-		
-		
+		ProgramController propertiesController = new ProgramController(properties);
+		HyperspectralImageModel himOrig, himComp;
 		
 		//set canvas up 
 		//https://stackoverflow.com/questions/23449932/javafx-resize-canvas-when-screen-is-resized
@@ -70,7 +68,11 @@ public class Window extends Application {
 			try {
 				originalTextBox.setText(f.toString());
 				HyperspectralImage hi = HyperspectralImageReader.read(f.toString(), true);
-				himOrig.setFromImage(hi);
+				//create image
+				himOrig = new ConcreteHyperspectralImageModel(hi);
+				//create view for image
+				HyperspectralImageStage his = new HyperspectralImageStage(propertiesController, "Original");
+				//bind properties
 			} catch (Exception e1) {
 				System.out.println("Did not load image");
 			}
@@ -78,52 +80,13 @@ public class Window extends Application {
 		originalButton.setMinWidth(90);
 		final HBox originalHBox = new HBox(originalButton, originalTextBox);
 		
-		/** Compressed image selector */
-		final TextField compressedTextBox = new TextField("Compressed");
-		compressedTextBox.setEditable(false);
-		compressedTextBox.setPrefWidth(4000);
-		final Button compressedButton = new Button("Compressed");
-		compressedButton.setMinWidth(90);
-		compressedButton.setOnAction(e -> {
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Open Resource File");
-			File f = fileChooser.showOpenDialog(window);
-			try {
-				compressedTextBox.setText(f.toString());	
-				HyperspectralImage hi = HyperspectralImageReader.read(f.toString(), true);
-				himComp.setFromImage(hi);
-			} catch (Exception e1) {
-				System.out.println("Did not load image");
-			}
-						
-					
-		});
-		final HBox compressedHBox = new HBox(compressedButton, compressedTextBox);
 		
 		/** Band selector */
-		final IntegerSpinnerValueFactory valueFactoryRed = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
-		final IntegerSpinnerValueFactory valueFactoryGreen = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
-		final IntegerSpinnerValueFactory valueFactoryBlue = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
-		final IntegerSpinnerValueFactory valueFactoryAll = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
-		final Spinner<Integer> spinnerRed = new ScrollSpinner<Integer>(valueFactoryRed);
-		final Spinner<Integer> spinnerBlue = new ScrollSpinner<Integer>(valueFactoryBlue);
-		final Spinner<Integer> spinnerGreen = new ScrollSpinner<Integer>(valueFactoryGreen);
-		final Spinner<Integer> spinnerAll = new ScrollSpinner<Integer>(valueFactoryAll);
 		
-
-        spinnerAll.valueProperty().addListener((e, oldVal2, newVal2) -> {
-        	valueFactoryBlue.setValue(newVal2);
-			valueFactoryRed.setValue(newVal2);
-			valueFactoryGreen.setValue(newVal2);
-        });
-        
-        himOrig.modelChangedProperty().addListener(e -> {
-            valueFactoryRed.maxProperty().setValue(himOrig.getBands() - 1);
-            valueFactoryGreen.maxProperty().setValue(himOrig.getBands() - 1);
-            valueFactoryBlue.maxProperty().setValue(himOrig.getBands() - 1);
-            valueFactoryAll.maxProperty().setValue(himOrig.getBands() - 1);
-        });
-        
+		final Spinner<Integer> spinnerRed = new ScrollSpinner<Integer>(properties.valueFactoryRedProperty());
+		final Spinner<Integer> spinnerBlue = new ScrollSpinner<Integer>(properties.valueFactoryBlueProperty());
+		final Spinner<Integer> spinnerGreen = new ScrollSpinner<Integer>(properties.valueFactoryGreenProperty());
+		final Spinner<Integer> spinnerAll = new ScrollSpinner<Integer>(properties.valueFactoryAllProperty());
 
 
 		
@@ -270,7 +233,7 @@ public class Window extends Application {
 		mvpcOrig.selectedRIndexProperty().bind(spinnerRed.valueProperty());
 		mvpcOrig.selectedGIndexProperty().bind(spinnerGreen.valueProperty());
 		mvpcOrig.selectedBIndexProperty().bind(spinnerBlue.valueProperty());
-		MatrixViewStage mvsOrig = new MatrixViewStage(mvpOrig, "Original");
+		HyperspectralImageStage mvsOrig = new HyperspectralImageStage(mvpOrig, "Original");
 		
 		mvsOrig.show();
 		/*************************/
@@ -282,7 +245,7 @@ public class Window extends Application {
 		mvpcComp.selectedGIndexProperty().bind(spinnerGreen.valueProperty());
 		mvpcComp.selectedBIndexProperty().bind(spinnerBlue.valueProperty());
 		
-		MatrixViewStage mvsComp = new MatrixViewStage(mvpComp, "Compressed");
+		HyperspectralImageStage mvsComp = new HyperspectralImageStage(mvpComp, "Compressed");
 
 		mvsComp.show();
 		/**************************/
@@ -295,7 +258,7 @@ public class Window extends Application {
 		mvpcDiff.selectedGIndexProperty().bind(spinnerGreen.valueProperty());
 		mvpcDiff.selectedBIndexProperty().bind(spinnerBlue.valueProperty());
 		
-		MatrixViewStage mvsDiff = new MatrixViewStage(mvpDiff, "Difference");
+		HyperspectralImageStage mvsDiff = new HyperspectralImageStage(mvpDiff, "Difference");
 		
 		mvsDiff.show();
 		/**************************/

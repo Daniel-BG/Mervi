@@ -27,8 +27,9 @@ public class ScrollSpinner<T> extends Spinner<T> {
 	public ScrollSpinner(SpinnerValueFactory<T> factory) {
 		this(Config.SCROLL_UNITS);
 		this.setValueFactory(factory);
-		this.setOnSwipeUp(e -> factory.increment(1));
-	    this.setOnSwipeDown(e -> factory.decrement(1));
+		
+		this.onSwipeUpProperty().addListener(e -> factory.increment(1));
+		this.onSwipeDownProperty().addListener(e -> factory.decrement(1));
 	}
 	
 	public ScrollSpinner() {

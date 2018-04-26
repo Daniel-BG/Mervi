@@ -1,11 +1,12 @@
 package com.mervi.view;
 
-import javafx.beans.property.DoubleProperty;
+import com.mervi.control.ProgramController;
+
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 public class MatrixSelector extends Canvas {
@@ -14,17 +15,12 @@ public class MatrixSelector extends Canvas {
 	private final IntegerProperty numCols;
 	private final IntegerProperty selectedRow;
 	private final IntegerProperty selectedCol;
-	//RELATIVE (0.0 to 1.0)
-	private final DoubleProperty selectedXPos;
-	private final DoubleProperty selectedYPos;
 	
-	{
+	public MatrixSelector(ProgramController sc) {
 		this.numCols = new SimpleIntegerProperty(0);
 		this.numRows = new SimpleIntegerProperty(0);
 		this.selectedCol = new SimpleIntegerProperty(0);
 		this.selectedRow = new SimpleIntegerProperty(0);
-		this.selectedXPos = new SimpleDoubleProperty(0);
-		this.selectedYPos = new SimpleDoubleProperty(0);
 		
 		this.numCols.addListener(e -> redraw());
 		this.numRows.addListener(e -> redraw());
@@ -32,6 +28,13 @@ public class MatrixSelector extends Canvas {
 		this.selectedRow.addListener(e -> redraw());	
 		this.widthProperty().addListener(e -> redraw());
 		this.heightProperty().addListener(e -> redraw());
+		
+		this.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
+			double relxpos = e.getSceneX() / getWidth();
+			double relypos = e.getSceneY() / getHeight();
+			
+			sc.selectionOn(relxpos, relypos);
+		});
 	}
 	
 	private void redraw() {
@@ -102,13 +105,5 @@ public class MatrixSelector extends Canvas {
 	
 	public IntegerProperty selectedColProperty() {
 		return this.selectedCol;
-	}
-	
-	public DoubleProperty selectedXPosProperty() {
-		return this.selectedXPos;
-	}
-	
-	public DoubleProperty selectedYPosProperty() {
-		return this.selectedYPos;
 	}
 }

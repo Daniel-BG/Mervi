@@ -6,8 +6,6 @@ import com.mervi.model.HyperspectralImageStatistics;
 public interface HyperspectralImageObserver {
 
 
-	public void statisticsUpdate(double average, double variance);
-
 	/**
 	 * Called when the band is requested
 	 * @param band
