@@ -10,7 +10,7 @@ public class ConcreteHyperspectralImageModel extends HyperspectralImageModel {
 		super(image.getData().getNumberOfBands(), 
 				image.getData().getNumberOfLines(), 
 				image.getData().getNumberOfSamples(), 
-				image.getData().getDataType().getDynamicRange());
+				image.getData().getDataType().getBitDepth());
 		
 		this.values = new int[getBands()][getRows()][getCols()];
 		

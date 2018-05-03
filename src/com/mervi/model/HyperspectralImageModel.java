@@ -7,15 +7,15 @@ import com.mervi.util.exceptions.ObserverNotFoundException;
 
 public abstract class HyperspectralImageModel extends ParametrizedObservable<HyperspectralImageObserver>{
 	
-	private int bands, rows, cols, range;
+	private int bands, rows, cols, depth;
 	private HyperspectralImageStatistics statistics;
 	
 	
-	public HyperspectralImageModel(int bands, int rows, int cols, int range) {
+	public HyperspectralImageModel(int bands, int rows, int cols, int depth) {
 		this.bands = bands;
 		this.rows = rows;
 		this.cols = cols;
-		this.range = range;
+		this.depth = depth;
 		this.statistics = new HyperspectralImageStatistics(this);
 		this.bandCache = new HyperspectralBandModel[this.bands];
 	}
@@ -66,7 +66,11 @@ public abstract class HyperspectralImageModel extends ParametrizedObservable<Hyp
 	}
 	
 	public int getRange() {
-		return this.range;
+		return 0x1 << getDepth();
+	}
+	
+	public int getDepth() {
+		return this.depth;
 	}
 	
 	public int getBitSize() {

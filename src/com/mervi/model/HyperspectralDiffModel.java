@@ -5,7 +5,7 @@ public class HyperspectralDiffModel extends HyperspectralImageModel {
 	HyperspectralImageModel source1, source2;
 	
 	public HyperspectralDiffModel(HyperspectralImageModel him1, HyperspectralImageModel him2) {
-		super(him1.getBands(), him1.getRows(), him1.getCols(), him1.getRange());
+		super(him1.getBands(), him1.getRows(), him1.getCols(), him1.getDepth());
 		if (!him1.sizeEquals(him2)) {
 			throw new IllegalArgumentException("Both images must equal in size");
 		}

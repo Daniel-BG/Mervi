@@ -32,7 +32,8 @@ public class HyperspectralImageStage extends Stage {
 		this.show();
 		
 		this.redBandProperty().addListener((o, oldVal, newVal) -> {
-			//scene.set
+			this.setWidth(newVal.getCols());
+			this.setHeight(newVal.getRows());
 		});
 	}
 	
