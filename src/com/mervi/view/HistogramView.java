@@ -24,11 +24,13 @@ public class HistogramView extends VBox {
 		axy = new NumberAxis();
 		axx.setAutoRanging(false);
 		axy.setAutoRanging(true);
+		
 		//create chart
 		chart = new AreaChart<Number, Number>(axx, axy);
 		chart.setLegendVisible(false);
 		chart.setCreateSymbols(false);
 		chart.setAnimated(false);
+		chart.setCache(true);
 		chart.setPrefWidth(2000);
 		chart.setMaxWidth(2000);
 		
@@ -120,6 +122,14 @@ public class HistogramView extends VBox {
 		slider.setHighValue(maxVal);
 	}
 	
+	public void clearSeries(int index) {
+		Series<Number, Number> old = this.chart.getData().remove(index);
+		old.getData().removeListener(updateSliderOnDataChange);
+		
+		XYChart.Series<Number, Number> newSeries = new XYChart.Series<Number, Number>();
+		newSeries.getData().addListener(updateSliderOnDataChange);
+		this.chart.getData().add(index, newSeries);
+	}
 	
 	/**
 	 * @return the selected series that is shown on screen

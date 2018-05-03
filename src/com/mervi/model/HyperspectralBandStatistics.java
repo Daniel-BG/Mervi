@@ -122,8 +122,8 @@ public class HyperspectralBandStatistics {
 	
 	List<Data<Number, Number>> bandData;
 
-	public void setHistogramIn(ObservableList<Data<Number, Number>> target) {
-		target.clear();
+	public void addHistogramIn(ObservableList<Data<Number, Number>> target) {
+		//target.clear();
 		if (bandData == null) {
 			int diff = 0;
 			int[] buckets = new int[hbm.getRange()];
@@ -139,7 +139,6 @@ public class HyperspectralBandStatistics {
 				if (buckets[i] > 0)
 					bandData.add(new XYChart.Data<Number, Number>(i, buckets[i]));
 			}
-			
 		}
 		
 		target.addAll(bandData);

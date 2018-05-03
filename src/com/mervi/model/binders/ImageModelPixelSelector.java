@@ -1,5 +1,6 @@
-package com.mervi.model;
+package com.mervi.model.binders;
 
+import com.mervi.model.HyperspectralImageModel;
 import com.mervi.view.BitViewer;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.IntegerProperty;

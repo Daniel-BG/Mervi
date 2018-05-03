@@ -1,16 +1,18 @@
 package com.mervi.util;
 
 import com.mervi.model.HyperspectralImageModel;
-import com.mervi.model.ImageModelBandSelector;
-import com.mervi.model.ImageModelPixelSelector;
 import com.mervi.model.ProgramProperties;
+import com.mervi.model.binders.ImageModelBandSelector;
+import com.mervi.model.binders.ImageModelPixelSelector;
 import com.mervi.view.BandMetricsLabel;
 import com.mervi.view.BitViewer;
 import com.mervi.view.CoordinateLabel;
+import com.mervi.view.HistogramView;
 import com.mervi.view.HyperspectralImageStage;
 import com.mervi.view.ImageMetricsLabel;
 import com.mervi.view.PixelMetricsLabel;
 
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 
 public class ModelViewBinder {
@@ -87,5 +89,18 @@ public class ModelViewBinder {
 	public static void bindSelectedCoordView(ProgramProperties properties, CoordinateLabel coordLabel) {
 		coordLabel.rowProperty().bind(properties.rowProperty());
 		coordLabel.colProperty().bind(properties.colProperty());
+	}
+
+	public static void bindBandToHistogram(ObjectProperty<HyperspectralImageModel> him,
+			ObjectProperty<Integer> band, HistogramView hv, int index) {
+		InvalidationListener il = e -> {
+			hv.clearSeries(index);
+			if (him.getValue() != null)
+				him.getValue().getBand(band.getValue()).getStatistics().addHistogramIn(hv.getSeries(index).getData());
+		};
+		
+		him.addListener(il);
+		band.addListener(il);
+		
 	}
 }

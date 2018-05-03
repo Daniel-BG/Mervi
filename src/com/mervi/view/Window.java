@@ -65,6 +65,16 @@ public class Window extends Application {
 		HyperspectralImageStage diffStage = new HyperspectralImageStage(propertiesController, "Diff");
 		/**************************/
 		
+		/** Histograms */
+		Stage histogramStage = new Stage();
+		HistogramView hvOrig = new HistogramView(3);
+		HBox hbHisto = new HBox(hvOrig);
+
+		Scene histogramScene = new Scene(hbHisto, 1200, 300);
+		histogramStage.setScene(histogramScene);
+		histogramStage.setTitle("Histograms");
+		/**************/
+		
 		/** bind stuff */
 		ModelViewBinder.bindOriginalImageToView(properties, origStage);
 		ModelViewBinder.bindDifferenceImageToView(properties, diffStage);
@@ -76,6 +86,11 @@ public class Window extends Application {
 		ModelViewBinder.bindImageMetricsView(properties, iml);
 		ModelViewBinder.bindPixelMetricsView(properties, pml);
 		ModelViewBinder.bindSelectedCoordView(properties, coordLabel);
+		ModelViewBinder.bindBandToHistogram(properties.originalImageProperty(), properties.valueFactoryRedProperty().valueProperty(), hvOrig, 0);
+		ModelViewBinder.bindBandToHistogram(properties.compressedImageProperty(), properties.valueFactoryRedProperty().valueProperty(), hvOrig, 1);
+		ModelViewBinder.bindBandToHistogram(properties.comparableImageProperty(), properties.valueFactoryRedProperty().valueProperty(), hvOrig, 2);
+		//ModelViewBinder.bindBandToHistogram(properties.originalImageProperty(), properties.valueFactoryGreenProperty().valueProperty(), hvOrig, 1);
+		//ModelViewBinder.bindBandToHistogram(properties.originalImageProperty(), properties.valueFactoryBlueProperty().valueProperty(), hvOrig, 2);
 		
 		
 		/** Putting all things together */
@@ -95,44 +110,12 @@ public class Window extends Application {
 		origStage.show();
 		compStage.show();
 		diffStage.show();
-
-		
-		/**Stage histogramStage = new Stage();
-		HistogramView hvOrig = new HistogramView(3);
-		HistogramView hvComp = new HistogramView(3);
-		HistogramView hvDiff = new HistogramView(3);
-		HBox hbHisto = new HBox(hvOrig);
-
-		Scene histogramScene = new Scene(hbHisto, 1200, 300);
-		histogramStage.setScene(histogramScene);
-		histogramStage.setTitle("Histograms");
 		histogramStage.show();
 		
-		InvalidationListener histogramRefresher = e -> {
-			int bandRIndex = spinnerRed.valueProperty().getValue().intValue();
-			int bandGIndex = spinnerGreen.valueProperty().getValue().intValue();
-			int bandBIndex = spinnerBlue.valueProperty().getValue().intValue();
-        	HyperspectralBandModel bandR, bandG, bandB;
-        	try {
-        		bandR = himOrig.getBand(bandRIndex);
-        		bandG = himOrig.getBand(bandGIndex);
-        		bandB = himOrig.getBand(bandBIndex);
-        	} catch (Exception ex) {
-        		return; //if one image has updated and the other hasn't, avoid conflicts
-        	}
-        	
-        	bandR.setHistogramIn(hvOrig.getSeries(0).getData());
-        	bandG.setHistogramIn(hvOrig.getSeries(1).getData());
-        	bandB.setHistogramIn(hvOrig.getSeries(2).getData());
-        	//HistogramUtilities.getHistogramFor(bandR, hvOrig.getSeries(0).getData());
-        	//HistogramUtilities.getHistogramFor(bandG, hvOrig.getSeries(1).getData());
-        	//HistogramUtilities.getHistogramFor(bandB, hvOrig.getSeries(2).getData());
-			
-		};
+
 		
-		spinnerRed.valueProperty().addListener(histogramRefresher);
-		spinnerGreen.valueProperty().addListener(histogramRefresher);
-		spinnerBlue.valueProperty().addListener(histogramRefresher);*/
+		
+		
 		
 		
 	}
