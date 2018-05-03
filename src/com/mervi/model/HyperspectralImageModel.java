@@ -25,7 +25,7 @@ public abstract class HyperspectralImageModel extends ParametrizedObservable<Hyp
 	/** BAND CACHE SYSTEM */
 	private HyperspectralBandModel[] bandCache;
 	
-	protected final HyperspectralBandModel getBand(int index) {
+	public  HyperspectralBandModel getBand(int index) {
 		if (this.bandCache == null)
 			throw new DataNotInitializedException();
 			

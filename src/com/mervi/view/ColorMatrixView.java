@@ -1,6 +1,8 @@
 package com.mervi.view;
 
 import com.mervi.model.HyperspectralBandModel;
+
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
@@ -49,15 +51,15 @@ public class ColorMatrixView extends Group {
 	}
 	
 	
-	public SimpleObjectProperty<HyperspectralBandModel> redBandProperty() {
+	public ObjectProperty<HyperspectralBandModel> redBandProperty() {
 		return this.redBandProperty;
 	}
 	
-	public SimpleObjectProperty<HyperspectralBandModel> greenBandProperty() {
+	public ObjectProperty<HyperspectralBandModel> greenBandProperty() {
 		return this.greenBandProperty;
 	}
 	
-	public SimpleObjectProperty<HyperspectralBandModel> blueBandProperty() {
+	public ObjectProperty<HyperspectralBandModel> blueBandProperty() {
 		return this.blueBandProperty;
 	}
 	

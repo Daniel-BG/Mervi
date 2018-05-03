@@ -3,7 +3,7 @@ package com.mervi.view;
 import com.mervi.control.ProgramController;
 import com.mervi.model.HyperspectralBandModel;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -30,18 +30,22 @@ public class HyperspectralImageStage extends Stage {
 		this.setScene(scene);
 		this.setTitle(title);
 		this.show();
+		
+		this.redBandProperty().addListener((o, oldVal, newVal) -> {
+			//scene.set
+		});
 	}
 	
 	
-	public SimpleObjectProperty<HyperspectralBandModel> redBandProperty() {
+	public ObjectProperty<HyperspectralBandModel> redBandProperty() {
 		return this.cmv.redBandProperty();
 	}
 	
-	public SimpleObjectProperty<HyperspectralBandModel> greenBandProperty() {
+	public ObjectProperty<HyperspectralBandModel> greenBandProperty() {
 		return this.cmv.greenBandProperty();
 	}
 	
-	public SimpleObjectProperty<HyperspectralBandModel> blueBandProperty() {
+	public ObjectProperty<HyperspectralBandModel> blueBandProperty() {
 		return this.cmv.blueBandProperty();
 	}
 	
