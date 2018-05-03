@@ -9,12 +9,14 @@ import com.mervi.control.MatrixViewPaneController;
 import com.mervi.control.ProgramController;
 import com.mervi.model.HyperspectralDiffModel;
 import com.mervi.model.HyperspectralImageModel;
+import com.mervi.model.HyperspectralImageStatistics;
 import com.mervi.model.ConcreteHyperspectralImageModel;
 import com.mervi.model.ProgramProperties;
 import com.mervi.model.HyperspectralBandModel;
 import com.mervi.model.metrics.BandMetrics;
 import com.mervi.model.metrics.ImageMetrics;
 import com.mervi.model.metrics.PixelMetrics;
+import com.mervi.model.observers.HyperspectralImageObserver;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -151,7 +153,22 @@ public class Window extends Application {
         
         properties.rowProperty().addListener(pixelMetricRefresher);
         properties.colProperty().addListener(pixelMetricRefresher);
-        spinnerRed.valueProperty().addListener(pixelMetricRefresher);
+        properties.valueFactoryRedProperty().valueProperty().addListener(pixelMetricRefresher);
+        
+        himOrig.addObserver(new HyperspectralImageObserver() {
+			
+			@Override
+			public void statisticsUpdate(HyperspectralImageStatistics statistics) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void bandRequested(HyperspectralBandModel band, int index) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
         himOrig.modelChangedProperty().addListener(pixelMetricRefresher);
         himComp.modelChangedProperty().addListener(pixelMetricRefresher);
         //band metrics below

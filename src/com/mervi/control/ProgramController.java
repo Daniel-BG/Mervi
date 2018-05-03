@@ -20,15 +20,15 @@ public class ProgramController {
 	
 	public void setRselection(int index) {
 		//todo assert that it is possible
-		this.pp.redIndexProperty().set(index);
+		this.pp.valueFactoryRedProperty().setValue(index);
 	}
 	
 	public void setGselection(int index) {
-		this.pp.greenIndexProperty().set(index);
+		this.pp.valueFactoryGreenProperty().setValue(index);
 	}
 	
 	public void setBselection(int index) {
-		this.pp.blueIndexProperty().set(index);
+		this.pp.valueFactoryBlueProperty().setValue(index);
 	}
 
 }
