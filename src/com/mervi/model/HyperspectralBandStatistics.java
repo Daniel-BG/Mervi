@@ -1,6 +1,7 @@
 package com.mervi.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javafx.collections.ObservableList;
@@ -121,17 +122,22 @@ public class HyperspectralBandStatistics {
 	}
 	
 	List<Data<Number, Number>> bandData;
-
-	public void addHistogramIn(ObservableList<Data<Number, Number>> target) {
-		//target.clear();
+	int maxY = Integer.MIN_VALUE, minY = 0, maxX = Integer.MIN_VALUE, minX = Integer.MAX_VALUE;
+	
+	private void generateHistogram() {
 		if (bandData == null) {
 			int diff = 0;
 			int[] buckets = new int[hbm.getRange()];
 			for (int i = 0; i < hbm.getRows(); i++) {
 				for (int j = 0; j < hbm.getCols(); j++) {
-					if (buckets[hbm.get(i,  j)] == 0)
+					int index = hbm.get(i,  j);
+					minX = Math.min(minX, index);
+					maxX = Math.max(maxX, index);
+					int newValue = buckets[index] + 1;
+					if (newValue == 1)
 						diff++;
-					buckets[hbm.get(i, j)]++;
+					buckets[index] = newValue;
+					maxY = Math.max(maxY, newValue);
 				}
 			}
 			bandData = new ArrayList<Data<Number, Number>>(diff);
@@ -140,8 +146,31 @@ public class HyperspectralBandStatistics {
 					bandData.add(new XYChart.Data<Number, Number>(i, buckets[i]));
 			}
 		}
-		
-		target.addAll(bandData);
+	}
+
+	public List<Data<Number, Number>> getHistogram() {
+		generateHistogram();
+		return Collections.unmodifiableList(this.bandData);
+	}
+	
+	public int getMaxX() {
+		generateHistogram();
+		return this.maxX;
+	}
+	
+	public int getMinX() {
+		generateHistogram();
+		return this.minX;
+	}
+	
+	public int getMinY() {
+		generateHistogram();
+		return this.minY;
+	}
+	
+	public int getMaxY() {
+		generateHistogram();
+		return this.maxY;
 	}
 
 }

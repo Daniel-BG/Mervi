@@ -16,11 +16,11 @@ import javafx.stage.Stage;
 
 public class HyperspectralImageSelector extends HBox {
 
-	public HyperspectralImageSelector(Stage parent, ObjectProperty<HyperspectralImageModel> target) {
-		final TextField originalTextBox = new TextField("Original");
+	public HyperspectralImageSelector(Stage parent, ObjectProperty<HyperspectralImageModel> target, String text) {
+		final TextField originalTextBox = new TextField(text);
 		originalTextBox.setEditable(false);
 		originalTextBox.setPrefWidth(4000);
-		final Button originalButton = new Button("Original");
+		final Button originalButton = new Button(text);
 		originalButton.setOnAction(e -> {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Open Resource File");

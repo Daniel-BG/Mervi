@@ -35,8 +35,8 @@ public class Window extends Application {
 		ProgramController propertiesController = new ProgramController(properties);
 		
 		/** Original image selector */
-		HyperspectralImageSelector selectorOrig = new HyperspectralImageSelector(window, properties.originalImageProperty());
-		HyperspectralImageSelector selectorComp = new HyperspectralImageSelector(window, properties.compressedImageProperty());
+		HyperspectralImageSelector selectorOrig = new HyperspectralImageSelector(window, properties.originalImageProperty(), "Original");
+		HyperspectralImageSelector selectorComp = new HyperspectralImageSelector(window, properties.compressedImageProperty(), "Compressed");
 
 		/** Band selector */
 		Spinner<Integer> spinnerRed = new ScrollSpinner<Integer>(properties.valueFactoryRedProperty());
@@ -88,7 +88,7 @@ public class Window extends Application {
 		ModelViewBinder.bindSelectedCoordView(properties, coordLabel);
 		ModelViewBinder.bindBandToHistogram(properties.originalImageProperty(), properties.valueFactoryRedProperty().valueProperty(), hvOrig, 0);
 		ModelViewBinder.bindBandToHistogram(properties.compressedImageProperty(), properties.valueFactoryRedProperty().valueProperty(), hvOrig, 1);
-		ModelViewBinder.bindBandToHistogram(properties.comparableImageProperty(), properties.valueFactoryRedProperty().valueProperty(), hvOrig, 2);
+		//ModelViewBinder.bindBandToHistogram(properties.comparableImageProperty(), properties.valueFactoryRedProperty().valueProperty(), hvOrig, 2);
 		//ModelViewBinder.bindBandToHistogram(properties.originalImageProperty(), properties.valueFactoryGreenProperty().valueProperty(), hvOrig, 1);
 		//ModelViewBinder.bindBandToHistogram(properties.originalImageProperty(), properties.valueFactoryBlueProperty().valueProperty(), hvOrig, 2);
 		

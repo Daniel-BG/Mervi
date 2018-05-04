@@ -1,5 +1,6 @@
 package com.mervi.util;
 
+import com.mervi.model.HyperspectralBandStatistics;
 import com.mervi.model.HyperspectralImageModel;
 import com.mervi.model.ProgramProperties;
 import com.mervi.model.binders.ImageModelBandSelector;
@@ -93,10 +94,11 @@ public class ModelViewBinder {
 
 	public static void bindBandToHistogram(ObjectProperty<HyperspectralImageModel> him,
 			ObjectProperty<Integer> band, HistogramView hv, int index) {
-		InvalidationListener il = e -> {
-			hv.clearSeries(index);
-			if (him.getValue() != null)
-				him.getValue().getBand(band.getValue()).getStatistics().addHistogramIn(hv.getSeries(index).getData());
+		InvalidationListener il = e -> { 
+			if (him.getValue() != null) {
+				HyperspectralBandStatistics hbs = him.getValue().getBand(band.getValue()).getStatistics();
+				hv.setSeries(index, hbs.getHistogram(), hbs.getMinX(), hbs.getMaxX(), hbs.getMinY(), hbs.getMaxY());
+			}
 		};
 		
 		him.addListener(il);
