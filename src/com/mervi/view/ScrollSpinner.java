@@ -1,5 +1,7 @@
 package com.mervi.view;
 
+import com.mervi.util.EventBinder;
+
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.input.SwipeEvent;
@@ -12,17 +14,8 @@ import javafx.scene.input.SwipeEvent;
 public class ScrollSpinner<T> extends Spinner<T> {
 	
 	{
-		this.setOnSwipeUp(e -> this.getValueFactory().increment(1));
-		this.setOnSwipeDown(e -> this.getValueFactory().decrement(1));
-		
-		this.setOnScroll(e -> {
-			if (e.getDeltaY() > 0) {
-				this.fireEvent(new SwipeEvent(SwipeEvent.SWIPE_UP, 0, 0, 0, 0, false, false, false, false, false, 0, null));
-			}
-			else {
-				this.fireEvent(new SwipeEvent(SwipeEvent.SWIPE_DOWN, 0, 0, 0, 0, false, false, false, false, false, 0, null));
-			}
-		});
+		EventBinder.changeValueWhenSwiping(this);
+		EventBinder.addSwipeWhenScrolling(this);
 	}
 	
 	public ScrollSpinner(SpinnerValueFactory<T> factory) {

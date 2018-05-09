@@ -2,7 +2,10 @@ package com.mervi.util;
 
 import org.controlsfx.control.RangeSlider;
 
+import com.mervi.view.ScrollSpinner;
+
 import javafx.scene.Node;
+import javafx.scene.control.Spinner;
 import javafx.scene.input.SwipeEvent;
 
 public class EventBinder {
@@ -40,6 +43,13 @@ public class EventBinder {
 			rs.incrementHighValue();
 			rs.incrementLowValue();
 		});
+	}
+
+
+
+	public static void changeValueWhenSwiping(Spinner<?> s) {
+		s.setOnSwipeUp(e -> s.getValueFactory().increment(1));
+		s.setOnSwipeDown(e -> s.getValueFactory().decrement(1));
 	}
 	
 }

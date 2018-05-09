@@ -95,15 +95,46 @@ public class HyperspectralBandStatistics {
 		return maxMinDiff;
 	}
 	
+	private Double dynLow, dynHigh;
+	private boolean dynRangeChanged = false;
+	private boolean dynRangeEnabled = false;
+	
+	/**
+	 * Set the dyn range of the shown image to eliminate outliers and have a more visible image
+	 * If both parameters are set to NULL, postprocessing is disabled
+	 * @param low
+	 * @param high
+	 */
+	public void setDynRange(Double low, Double high) {
+		if (low < 0.0 || high > 1.0 || low > high || low == null && high != null || high == null && low != null)
+			throw new IllegalArgumentException();
+		dynLow = low;
+		dynHigh = high;
+		dynRangeChanged = true;
+		if (dynLow == null && dynHigh == null)
+			dynRangeEnabled = false;
+		else
+			dynRangeEnabled = true;
+	}
+	
 	private double getNormalized(int row, int col) {
 		double val = hbm.get(row, col);
 		val -= this.getMin();
 		val /= (double) getMaxMinDiff();
+		if (dynRangeEnabled) {
+			val -= this.dynLow;
+			val /= this.dynHigh - this.dynLow;
+			//clamp pixels
+			if (val < 0)
+				val = 0;
+			if (val > 1)
+				val = 1;
+		}
 		return val;
 	}
 	
 	public Image getImage() {
-		if (this.bwImage != null)
+		if (this.bwImage != null && !this.dynRangeChanged)
 			return this.bwImage;
 		
 		WritableImage wi = new WritableImage(hbm.getCols(), hbm.getRows());
@@ -118,6 +149,7 @@ public class HyperspectralBandStatistics {
 			}
 		}
 		
+		this.dynRangeChanged = false;
 		return this.bwImage = wi;
 	}
 	
