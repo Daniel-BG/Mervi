@@ -1,13 +1,16 @@
 package com.mervi.view;
 
 
-import com.mervi.control.ProgramController;
-import com.mervi.model.ProgramProperties;
+import com.mervi.control.DynamicRangeController;
+import com.mervi.control.SelectionController;
+import com.mervi.model.properties.BandViewProperties;
+import com.mervi.model.properties.PixelViewProperties;
+import com.mervi.model.properties.ProgramProperties;
 import com.mervi.util.ModelViewBinder;
 import com.mervi.view.data.BitViewer;
 import com.mervi.view.data.CoordinateLabel;
 import com.mervi.view.data.HistogramView;
-import com.mervi.view.images.HyperspectralImageStage;
+import com.mervi.view.images.RGBImageStage;
 import com.mervi.view.statistics.BandMetricsLabel;
 import com.mervi.view.statistics.ImageMetricsLabel;
 import com.mervi.view.statistics.PixelMetricsLabel;
@@ -41,7 +44,25 @@ public class Window extends Application {
 		
 		//create model to be filled up
 		ProgramProperties properties = new ProgramProperties();
-		ProgramController propertiesController = new ProgramController(properties);
+		SelectionController selectionController = new SelectionController(properties);
+		BandViewProperties bvpROrig = new BandViewProperties(properties.originalImageProperty(), properties.selectedRedProperty());
+		BandViewProperties bvpGOrig = new BandViewProperties(properties.originalImageProperty(), properties.selectedGreenProperty());
+		BandViewProperties bvpBOrig = new BandViewProperties(properties.originalImageProperty(), properties.selectedBlueProperty());
+		BandViewProperties bvpRComp = new BandViewProperties(properties.compressedImageProperty(), properties.selectedRedProperty());
+		BandViewProperties bvpGComp = new BandViewProperties(properties.compressedImageProperty(), properties.selectedGreenProperty());
+		BandViewProperties bvpBComp = new BandViewProperties(properties.compressedImageProperty(), properties.selectedBlueProperty());
+		BandViewProperties bvpRDiff = new BandViewProperties(properties.comparableImageProperty(), properties.selectedRedProperty());
+		BandViewProperties bvpGDiff = new BandViewProperties(properties.comparableImageProperty(), properties.selectedGreenProperty());
+		BandViewProperties bvpBDiff = new BandViewProperties(properties.comparableImageProperty(), properties.selectedBlueProperty());
+		PixelViewProperties pvpOrig = new PixelViewProperties(properties.originalImageProperty(), properties);
+		PixelViewProperties pvpComp = new PixelViewProperties(properties.originalImageProperty(), properties);
+		PixelViewProperties pvpDiff = new PixelViewProperties(properties.originalImageProperty(), properties);
+		
+		DynamicRangeController dynRangeControllerOrig = new DynamicRangeController(bvpROrig, bvpGOrig, bvpBOrig);
+		DynamicRangeController dynRangeControllerComp = new DynamicRangeController(bvpRComp, bvpGComp, bvpBComp);
+		DynamicRangeController dynRangeControllerDiff = new DynamicRangeController(bvpRDiff, bvpGDiff, bvpBDiff);
+		
+		
 		
 		/** Original image selector */
 		HyperspectralImageSelector selectorOrig = new HyperspectralImageSelector(window, properties.originalImageProperty(), "Original");
@@ -69,9 +90,9 @@ public class Window extends Application {
         /********************/
 		
 		/** Create Image Views */
-		HyperspectralImageStage origStage = new HyperspectralImageStage(propertiesController, "Original");
-		HyperspectralImageStage compStage = new HyperspectralImageStage(propertiesController, "Comp");
-		HyperspectralImageStage diffStage = new HyperspectralImageStage(propertiesController, "Diff");
+		RGBImageStage origStage = new RGBImageStage(selectionController, dynRangeControllerOrig, "Original");
+		RGBImageStage compStage = new RGBImageStage(selectionController, dynRangeControllerComp, "Comp");
+		RGBImageStage diffStage = new RGBImageStage(selectionController, dynRangeControllerDiff, "Diff");
 		/**************************/
 		
 		/** Histograms */
@@ -85,12 +106,12 @@ public class Window extends Application {
 		/**************/
 		
 		/** bind stuff */
-		ModelViewBinder.bindOriginalImageToView(properties, origStage);
-		ModelViewBinder.bindDifferenceImageToView(properties, diffStage);
-		ModelViewBinder.bindCompressedImageToView(properties, compStage);
-		ModelViewBinder.bindOriginalPixelToView(properties, bvOrig);
-		ModelViewBinder.bindDifferencePixelToView(properties, bvDiff);
-		ModelViewBinder.bindCompressedPixelToView(properties, bvComp);
+		ModelViewBinder.bindImageModelToView(properties, bvpROrig, bvpGOrig, bvpBOrig, origStage);
+		ModelViewBinder.bindImageModelToView(properties, bvpRComp, bvpGComp, bvpBComp, compStage);
+		ModelViewBinder.bindImageModelToView(properties, bvpRDiff, bvpGDiff, bvpBDiff, diffStage);
+		ModelViewBinder.bindSelectedPixelToView(pvpOrig, bvOrig);
+		ModelViewBinder.bindSelectedPixelToView(pvpDiff, bvDiff);
+		ModelViewBinder.bindSelectedPixelToView(pvpComp, bvComp);
 		ModelViewBinder.bindBandMetricsView(properties, bml);
 		ModelViewBinder.bindImageMetricsView(properties, iml);
 		ModelViewBinder.bindPixelMetricsView(properties, pml);

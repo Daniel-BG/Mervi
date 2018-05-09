@@ -1,11 +1,11 @@
 package com.mervi.view.images;
 
-import com.mervi.model.HyperspectralBandModel;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  * @author Daniel
@@ -13,11 +13,11 @@ import javafx.scene.effect.BlendMode;
  * paints each pixel according to the corresponding color <br>
  * It is also able to resize dynamically
  */
-public class ColorMatrixView extends Group {
+public class RGBImageView extends Group {
 	
-	private BandView imageViewRed = new BandView();
-	private BandView imageViewGreen = new BandView();
-	private BandView imageViewBlue = new BandView();
+	private ImageView imageViewRed = new ImageView();
+	private ImageView imageViewGreen = new ImageView();
+	private ImageView imageViewBlue = new ImageView();
 	
 	{
 		imageViewRed.setBlendMode(BlendMode.RED);
@@ -39,16 +39,16 @@ public class ColorMatrixView extends Group {
 	}
 	
 	
-	public ObjectProperty<HyperspectralBandModel> redBandProperty() {
-		return this.imageViewRed.bandProperty();
+	public ObjectProperty<Image> redImageProperty() {
+		return this.imageViewRed.imageProperty();
 	}
 	
-	public ObjectProperty<HyperspectralBandModel> greenBandProperty() {
-		return this.imageViewGreen.bandProperty();
+	public ObjectProperty<Image> greenImageProperty() {
+		return this.imageViewGreen.imageProperty();
 	}
 	
-	public ObjectProperty<HyperspectralBandModel> blueBandProperty() {
-		return this.imageViewBlue.bandProperty();
+	public ObjectProperty<Image> blueImageProperty() {
+		return this.imageViewBlue.imageProperty();
 	}
 	
 	

@@ -2,26 +2,27 @@ package com.mervi.view.images;
 
 import org.controlsfx.control.RangeSlider;
 
-import com.mervi.control.ProgramController;
-import com.mervi.model.HyperspectralBandModel;
+import com.mervi.control.DynamicRangeController;
+import com.mervi.control.SelectionController;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class HyperspectralImageStage extends Stage {
+public class RGBImageStage extends Stage {
 
-	ColorMatrixView cmv;
+	RGBImageView cmv;
 	MatrixSelector ms;
 	
 	private static final int SLIDER_SPACING = 10;
 	
-	public HyperspectralImageStage(ProgramController sc, String title) {
+	public RGBImageStage(SelectionController sc, DynamicRangeController drc, String title) {
 		Pane p = new Pane();
-		cmv = new ColorMatrixView();
+		cmv = new RGBImageView();
 		ms = new MatrixSelector(sc);
 		
 		cmv.bindDimensionsTo(p.widthProperty(), p.heightProperty());
@@ -33,10 +34,13 @@ public class HyperspectralImageStage extends Stage {
 		ms.toFront();
 		
 		
-		RangeSlider dynRangeSlider = new RangeSlider();
+		RangeSlider dynRangeSlider = new RangeSlider(0.0,1.0,0.0,1.0);
 		dynRangeSlider.setPrefHeight(SLIDER_SPACING);
 		dynRangeSlider.setShowTickLabels(false);
 		dynRangeSlider.setShowTickMarks(false);
+		dynRangeSlider.lowValueProperty().addListener((o, old, newVal) -> drc.setLow(newVal.doubleValue()));
+		dynRangeSlider.highValueProperty().addListener((o, old, newVal) -> drc.setHigh(newVal.doubleValue()));
+		
 		VBox vbox = new VBox(p, dynRangeSlider);
 		
 		
@@ -45,23 +49,23 @@ public class HyperspectralImageStage extends Stage {
 		this.setTitle(title);
 		this.show();
 		
-		this.redBandProperty().addListener((o, oldVal, newVal) -> {
-			this.setWidth(newVal.getCols());
-			this.setHeight(newVal.getRows() + SLIDER_SPACING);
+		this.redImageProperty().addListener((o, oldVal, newVal) -> {
+			this.setWidth(newVal.getWidth());
+			this.setHeight(newVal.getHeight() + SLIDER_SPACING);
 		});
 	}
 	
 	
-	public ObjectProperty<HyperspectralBandModel> redBandProperty() {
-		return this.cmv.redBandProperty();
+	public ObjectProperty<Image> redImageProperty() {
+		return this.cmv.redImageProperty();
 	}
 	
-	public ObjectProperty<HyperspectralBandModel> greenBandProperty() {
-		return this.cmv.greenBandProperty();
+	public ObjectProperty<Image> greenImageProperty() {
+		return this.cmv.greenImageProperty();
 	}
 	
-	public ObjectProperty<HyperspectralBandModel> blueBandProperty() {
-		return this.cmv.blueBandProperty();
+	public ObjectProperty<Image> blueImageProperty() {
+		return this.cmv.blueImageProperty();
 	}
 	
 	public IntegerProperty numRowsProperty() {

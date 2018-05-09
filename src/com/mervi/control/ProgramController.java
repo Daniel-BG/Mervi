@@ -1,6 +1,6 @@
 package com.mervi.control;
 
-import com.mervi.model.ProgramProperties;
+import com.mervi.model.properties.ProgramProperties;
 
 public class ProgramController {
 	
@@ -8,14 +8,6 @@ public class ProgramController {
 	
 	public ProgramController(ProgramProperties pp) {
 		this.pp = pp;
-	}
-
-	public void selectionOn(double relxpos, double relypos) {
-		int realxpos = (int) (this.pp.maxColProperty().floatValue() * relxpos);
-		int realypos = (int) (this.pp.maxRowProperty().floatValue() * relypos);
-		
-		this.pp.colProperty().set(realxpos);
-		this.pp.rowProperty().set(realypos);
 	}
 	
 	public void setRselection(int index) {

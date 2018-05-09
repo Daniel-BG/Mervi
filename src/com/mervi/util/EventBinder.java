@@ -2,8 +2,6 @@ package com.mervi.util;
 
 import org.controlsfx.control.RangeSlider;
 
-import com.mervi.view.util.ScrollSpinner;
-
 import javafx.scene.Node;
 import javafx.scene.control.Spinner;
 import javafx.scene.input.SwipeEvent;

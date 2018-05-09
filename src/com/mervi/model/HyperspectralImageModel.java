@@ -1,11 +1,8 @@
 package com.mervi.model;
 
-import com.mervi.model.observers.HyperspectralImageObserver;
-import com.mervi.model.observers.ParametrizedObservable;
 import com.mervi.util.exceptions.DataNotInitializedException;
-import com.mervi.util.exceptions.ObserverNotFoundException;
 
-public abstract class HyperspectralImageModel extends ParametrizedObservable<HyperspectralImageObserver>{
+public abstract class HyperspectralImageModel {
 	
 	private int bands, rows, cols, depth;
 	private HyperspectralImageStatistics statistics;
@@ -83,24 +80,6 @@ public abstract class HyperspectralImageModel extends ParametrizedObservable<Hyp
 		return this.statistics;
 	}
 	/****************************/
-	
-	
-	/** OBSERVER STUFF */
-	public void requestStatistics(HyperspectralImageObserver o) {
-		if (this.observers.contains(o))
-			o.statisticsUpdate(this.statistics);
-		else
-			throw new ObserverNotFoundException();
-	}
-
-	public void requestBand(HyperspectralImageObserver o, int index) {
-		if (this.observers.contains(o))
-			o.bandRequested(this.getBand(index), index);
-		else
-			throw new ObserverNotFoundException();
-	}
-	/*******************/
-	
 	
 	
 	

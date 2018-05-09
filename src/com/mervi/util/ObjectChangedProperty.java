@@ -1,4 +1,4 @@
-package com.mervi.control;
+package com.mervi.util;
 
 import javafx.beans.property.SimpleBooleanProperty;
 

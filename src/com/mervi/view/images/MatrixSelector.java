@@ -1,6 +1,6 @@
 package com.mervi.view.images;
 
-import com.mervi.control.ProgramController;
+import com.mervi.control.SelectionController;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -16,7 +16,7 @@ public class MatrixSelector extends Canvas {
 	private final IntegerProperty selectedRow;
 	private final IntegerProperty selectedCol;
 	
-	public MatrixSelector(ProgramController sc) {
+	public MatrixSelector(SelectionController sc) {
 		this.numCols = new SimpleIntegerProperty(0);
 		this.numRows = new SimpleIntegerProperty(0);
 		this.selectedCol = new SimpleIntegerProperty(0);

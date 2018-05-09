@@ -1,4 +1,7 @@
-package com.mervi.model;
+package com.mervi.model.properties;
+
+import com.mervi.model.HyperspectralDiffModel;
+import com.mervi.model.HyperspectralImageModel;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.IntegerProperty;
@@ -21,12 +24,16 @@ public class ProgramProperties {
 	
 	/** Value factory for the red band */
 	private final IntegerSpinnerValueFactory valueFactoryRed = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+	private final IntegerProperty selectedRed = new SimpleIntegerProperty();
 	/** Value factory for the green band */
 	private final IntegerSpinnerValueFactory valueFactoryGreen = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+	private final IntegerProperty selectedGreen = new SimpleIntegerProperty();
 	/** Value factory for the blue band */
 	private final IntegerSpinnerValueFactory valueFactoryBlue = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+	private final IntegerProperty selectedBlue = new SimpleIntegerProperty();
 	/** Value factory for the generic band (control all of the others) */
 	private final IntegerSpinnerValueFactory valueFactoryAll = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+	private final IntegerProperty selectedAll = new SimpleIntegerProperty();
 
 	/** Maximum value for the band */
 	private final IntegerProperty maxIndex = new SimpleIntegerProperty();
@@ -76,6 +83,12 @@ public class ProgramProperties {
         
         originalImageProperty.addListener(createNewCompImage);
         compressedImageProperty.addListener(createNewCompImage);
+        
+        
+        selectedRed.bind(valueFactoryRed.valueProperty());
+        selectedGreen.bind(valueFactoryGreen.valueProperty());
+        selectedBlue.bind(valueFactoryBlue.valueProperty());
+        selectedAll.bind(valueFactoryAll.valueProperty());
 	}
 	
 	
@@ -93,6 +106,22 @@ public class ProgramProperties {
 	
 	public IntegerProperty maxRowProperty() {
 		return this.maxRow;
+	}
+	
+	public IntegerProperty selectedRedProperty() {
+		return this.selectedRed;
+	}
+	
+	public IntegerProperty selectedGreenProperty() {
+		return this.selectedGreen;
+	}
+	
+	public IntegerProperty selectedBlueProperty() {
+		return this.selectedBlue;
+	}
+	
+	public IntegerProperty selectedAllProperty() {
+		return this.selectedAll;
 	}
 	
 	public IntegerSpinnerValueFactory valueFactoryRedProperty() {

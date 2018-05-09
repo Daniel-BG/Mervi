@@ -1,15 +1,12 @@
-package com.mervi.model.binders;
+package com.mervi.model.properties;
 
 import com.mervi.model.HyperspectralImageModel;
-import com.mervi.view.data.BitViewer;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ObservableValue;
 
-public class ImageModelPixelSelector {
+public class PixelViewProperties {
 
 	private IntegerProperty redPixel = new SimpleIntegerProperty();
 	private IntegerProperty greenPixel = new SimpleIntegerProperty();
@@ -17,34 +14,35 @@ public class ImageModelPixelSelector {
 	
 	private IntegerProperty bitDepth = new SimpleIntegerProperty();
 	
-	public ImageModelPixelSelector(
+	public PixelViewProperties(
 			ObjectProperty<HyperspectralImageModel> imageProperty, 
-			ObservableValue<? extends Number> selectedRow,
+			ProgramProperties properties) {
+			/**ObservableValue<? extends Number> selectedRow,
 			ObservableValue<? extends Number> selectedCol,
 			ObservableValue<? extends Number> selectedR,
 			ObservableValue<? extends Number> selectedG, 
-			ObservableValue<? extends Number> selectedB) {
+			ObservableValue<? extends Number> selectedB) {*/
 		
 		InvalidationListener updateRed = e -> {
 			if (imageProperty.getValue() != null)
 				this.redPixel.setValue(imageProperty.getValue().getValue(
-						selectedR.getValue().intValue(), 
-						selectedRow.getValue().intValue(), 
-						selectedCol.getValue().intValue()));
+						properties.selectedRedProperty().intValue(), 
+						properties.rowProperty().intValue(), 
+						properties.colProperty().intValue()));
 		};
 		InvalidationListener updateGreen = e -> {
 			if (imageProperty.getValue() != null)
 				this.greenPixel.setValue(imageProperty.getValue().getValue(
-						selectedG.getValue().intValue(), 
-						selectedRow.getValue().intValue(), 
-						selectedCol.getValue().intValue()));
+						properties.selectedGreenProperty().intValue(), 
+						properties.rowProperty().intValue(), 
+						properties.colProperty().intValue()));
 		};
 		InvalidationListener updateBlue = e -> {
 			if (imageProperty.getValue() != null)
 				this.bluePixel.setValue(imageProperty.getValue().getValue(
-						selectedB.getValue().intValue(), 
-						selectedRow.getValue().intValue(), 
-						selectedCol.getValue().intValue()));
+						properties.selectedBlueProperty().intValue(), 
+						properties.rowProperty().intValue(), 
+						properties.colProperty().intValue()));
 		};
 		
 		
@@ -55,17 +53,17 @@ public class ImageModelPixelSelector {
 			this.bitDepth.set(newVal.getDepth());
 		});
 		
-		selectedRow.addListener(updateRed);
-		selectedRow.addListener(updateGreen);
-		selectedRow.addListener(updateBlue);
+		properties.rowProperty().addListener(updateRed);
+		properties.rowProperty().addListener(updateGreen);
+		properties.rowProperty().addListener(updateBlue);
 		
-		selectedCol.addListener(updateRed);
-		selectedCol.addListener(updateGreen);
-		selectedCol.addListener(updateBlue);
+		properties.colProperty().addListener(updateRed);
+		properties.colProperty().addListener(updateGreen);
+		properties.colProperty().addListener(updateBlue);
 		
-		selectedR.addListener(updateRed);
-		selectedG.addListener(updateGreen);
-		selectedB.addListener(updateBlue);
+		properties.selectedRedProperty().addListener(updateRed);
+		properties.selectedGreenProperty().addListener(updateGreen);
+		properties.selectedBlueProperty().addListener(updateBlue);
 	}
 	
 	public IntegerProperty redPixelProperty() {
@@ -79,14 +77,9 @@ public class ImageModelPixelSelector {
 	public IntegerProperty bluePixelProperty() {
 		return this.bluePixel;
 	}
-	
-	public void bindTo(BitViewer bv) {
-		bv.redValueProperty().bind(redPixel);
-		bv.greenValueProperty().bind(greenPixel);
-		bv.blueValueProperty().bind(bluePixel);
-		
-		bv.bitDepthProperty().bind(bitDepth);
+
+	public IntegerProperty bitDepthProperty() {
+		return this.bitDepth;
 	}
-	
 	
 }

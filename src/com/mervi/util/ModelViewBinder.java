@@ -2,13 +2,13 @@ package com.mervi.util;
 
 import com.mervi.model.HyperspectralBandStatistics;
 import com.mervi.model.HyperspectralImageModel;
-import com.mervi.model.ProgramProperties;
-import com.mervi.model.binders.ImageModelBandSelector;
-import com.mervi.model.binders.ImageModelPixelSelector;
+import com.mervi.model.properties.BandViewProperties;
+import com.mervi.model.properties.PixelViewProperties;
+import com.mervi.model.properties.ProgramProperties;
 import com.mervi.view.data.BitViewer;
 import com.mervi.view.data.CoordinateLabel;
 import com.mervi.view.data.HistogramView;
-import com.mervi.view.images.HyperspectralImageStage;
+import com.mervi.view.images.RGBImageStage;
 import com.mervi.view.statistics.BandMetricsLabel;
 import com.mervi.view.statistics.ImageMetricsLabel;
 import com.mervi.view.statistics.PixelMetricsLabel;
@@ -18,53 +18,22 @@ import javafx.beans.property.ObjectProperty;
 
 public class ModelViewBinder {
 	
-	
-	public static void bindCompressedImageToView(ProgramProperties properties, HyperspectralImageStage stage) {
-		bindImageModelToView(properties, properties.compressedImageProperty(), stage);
-	}
-	
-	public static void bindDifferenceImageToView(ProgramProperties properties, HyperspectralImageStage stage) {
-		bindImageModelToView(properties, properties.comparableImageProperty(), stage);
-	}
-
-	public static void bindOriginalImageToView(ProgramProperties properties, HyperspectralImageStage stage) {
-		bindImageModelToView(properties, properties.originalImageProperty(), stage);
-	}
-	
-	private static void bindImageModelToView(ProgramProperties properties, ObjectProperty<HyperspectralImageModel> image, HyperspectralImageStage stage) {
-		new ImageModelBandSelector(
-				image, 
-				properties.valueFactoryRedProperty().valueProperty(),
-				properties.valueFactoryGreenProperty().valueProperty(),
-				properties.valueFactoryBlueProperty().valueProperty())
-			.bindTo(stage);
+	public static void bindImageModelToView(ProgramProperties properties, BandViewProperties bvpR, BandViewProperties bvpG, BandViewProperties bvpB, RGBImageStage stage) {
+		stage.redImageProperty().bind(bvpR.selectedImageProperty());
+		stage.greenImageProperty().bind(bvpG.selectedImageProperty());
+		stage.blueImageProperty().bind(bvpB.selectedImageProperty());
 		
 		stage.selectedColProperty().bind(properties.colProperty());
 		stage.selectedRowProperty().bind(properties.rowProperty());
 	}
 	
 	
-	public static void bindCompressedPixelToView(ProgramProperties properties, BitViewer viewer) {
-		bindSelectedPixelToView(properties, properties.compressedImageProperty(), viewer);
-	}
-	
-	public static void bindDifferencePixelToView(ProgramProperties properties, BitViewer viewer) {
-		bindSelectedPixelToView(properties, properties.comparableImageProperty(), viewer);
-	}
-
-	public static void bindOriginalPixelToView(ProgramProperties properties, BitViewer viewer) {
-		bindSelectedPixelToView(properties, properties.originalImageProperty(), viewer);
-	}
-	
-	private static void bindSelectedPixelToView(ProgramProperties properties, ObjectProperty<HyperspectralImageModel> image, BitViewer viewer) {
-        new ImageModelPixelSelector(
-        		image,
-        		properties.rowProperty(),
-        		properties.colProperty(),
-        		properties.valueFactoryRedProperty().valueProperty(),
-        		properties.valueFactoryGreenProperty().valueProperty(),
-        		properties.valueFactoryBlueProperty().valueProperty())
-        	.bindTo(viewer);
+	public static void bindSelectedPixelToView(PixelViewProperties pvp, BitViewer bv) {
+		bv.redValueProperty().bind(pvp.redPixelProperty());
+		bv.greenValueProperty().bind(pvp.greenPixelProperty());
+		bv.blueValueProperty().bind(pvp.bluePixelProperty());
+		
+		bv.bitDepthProperty().bind(pvp.bitDepthProperty());
 	}
 	
 	
