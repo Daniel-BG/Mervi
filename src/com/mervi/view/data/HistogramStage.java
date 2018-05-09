@@ -1,4 +1,4 @@
-package com.mervi.view;
+package com.mervi.view.data;
 
 public class HistogramStage {
 

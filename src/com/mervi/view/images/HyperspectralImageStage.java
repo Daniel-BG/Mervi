@@ -1,9 +1,10 @@
-package com.mervi.view;
+package com.mervi.view.images;
 
 import org.controlsfx.control.RangeSlider;
 
 import com.mervi.control.ProgramController;
 import com.mervi.model.HyperspectralBandModel;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.Scene;

@@ -2,7 +2,7 @@ package com.mervi.model.binders;
 
 import com.mervi.model.HyperspectralBandModel;
 import com.mervi.model.HyperspectralImageModel;
-import com.mervi.view.HyperspectralImageStage;
+import com.mervi.view.images.HyperspectralImageStage;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.IntegerProperty;

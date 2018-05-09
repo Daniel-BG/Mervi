@@ -1,10 +1,9 @@
-package com.mervi.view;
+package com.mervi.view.util;
 
 import com.mervi.util.EventBinder;
 
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.input.SwipeEvent;
 
 /**
  * @author Daniel

@@ -4,7 +4,7 @@ import java.util.Random;
 
 import org.controlsfx.control.RangeSlider;
 
-import com.mervi.view.HistogramView;
+import com.mervi.view.data.HistogramView;
 
 import javafx.application.Application;
 import javafx.application.Platform;

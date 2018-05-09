@@ -1,4 +1,4 @@
-package com.mervi.view;
+package com.mervi.view.statistics;
 
 import com.mervi.Config;
 import com.mervi.model.HyperspectralImageModel;

@@ -1,4 +1,4 @@
-package com.mervi.view;
+package com.mervi.view.images;
 
 import com.mervi.control.ProgramController;
 
@@ -55,7 +55,7 @@ public class MatrixSelector extends Canvas {
 		gc.setLineWidth(1.0);
 		gc.strokeRect(this.selectedCol.intValue()*sqrw, this.selectedRow.intValue()*sqrh, sqrw, sqrh);
 		
-		/* COOL but mostly useless code
+		/* COOL but mostly useless code to set up a "magnifying lens" over the image
 		int SELECT_SIZE = 3;
 		int AUGMENT_VAL = 10;
 	

@@ -4,6 +4,15 @@ package com.mervi.view;
 import com.mervi.control.ProgramController;
 import com.mervi.model.ProgramProperties;
 import com.mervi.util.ModelViewBinder;
+import com.mervi.view.data.BitViewer;
+import com.mervi.view.data.CoordinateLabel;
+import com.mervi.view.data.HistogramView;
+import com.mervi.view.images.HyperspectralImageStage;
+import com.mervi.view.statistics.BandMetricsLabel;
+import com.mervi.view.statistics.ImageMetricsLabel;
+import com.mervi.view.statistics.PixelMetricsLabel;
+import com.mervi.view.util.FWLabel;
+import com.mervi.view.util.ScrollSpinner;
 
 import javafx.application.Application;
 import javafx.application.Platform;

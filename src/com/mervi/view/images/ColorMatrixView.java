@@ -1,13 +1,11 @@
-package com.mervi.view;
+package com.mervi.view.images;
 
 import com.mervi.model.HyperspectralBandModel;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;
-import javafx.scene.image.ImageView;
 
 /**
  * @author Daniel
@@ -17,13 +15,9 @@ import javafx.scene.image.ImageView;
  */
 public class ColorMatrixView extends Group {
 	
-	private ImageView imageViewRed = new ImageView();
-	private ImageView imageViewGreen = new ImageView();
-	private ImageView imageViewBlue = new ImageView();
-	
-	private SimpleObjectProperty<HyperspectralBandModel> redBandProperty = new SimpleObjectProperty<HyperspectralBandModel>();
-	private SimpleObjectProperty<HyperspectralBandModel> greenBandProperty = new SimpleObjectProperty<HyperspectralBandModel>();
-	private SimpleObjectProperty<HyperspectralBandModel> blueBandProperty = new SimpleObjectProperty<HyperspectralBandModel>();
+	private BandView imageViewRed = new BandView();
+	private BandView imageViewGreen = new BandView();
+	private BandView imageViewBlue = new BandView();
 	
 	{
 		imageViewRed.setBlendMode(BlendMode.RED);
@@ -31,12 +25,6 @@ public class ColorMatrixView extends Group {
 		imageViewBlue.setBlendMode(BlendMode.BLUE);
 		this.getChildren().addAll(imageViewRed, imageViewGreen, imageViewBlue);
 		this.setCache(true);
-	}
-	
-	public ColorMatrixView() {
-		this.redBandProperty().addListener((o, oldVal, newVal) -> imageViewRed.setImage(newVal.getStatistics().getImage()));
-		this.greenBandProperty().addListener((o, oldVal, newVal) -> imageViewGreen.setImage(newVal.getStatistics().getImage()));
-		this.blueBandProperty().addListener((o, oldVal, newVal) -> imageViewBlue.setImage(newVal.getStatistics().getImage()));
 	}
 	
 	/**************/
@@ -52,15 +40,15 @@ public class ColorMatrixView extends Group {
 	
 	
 	public ObjectProperty<HyperspectralBandModel> redBandProperty() {
-		return this.redBandProperty;
+		return this.imageViewRed.bandProperty();
 	}
 	
 	public ObjectProperty<HyperspectralBandModel> greenBandProperty() {
-		return this.greenBandProperty;
+		return this.imageViewGreen.bandProperty();
 	}
 	
 	public ObjectProperty<HyperspectralBandModel> blueBandProperty() {
-		return this.blueBandProperty;
+		return this.imageViewBlue.bandProperty();
 	}
 	
 	

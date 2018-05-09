@@ -1,4 +1,4 @@
-package com.mervi.view;
+package com.mervi.view.util;
 
 import javafx.scene.Group;
 import javafx.scene.Scene;
