@@ -55,8 +55,8 @@ public class Window extends Application {
 		BandViewProperties bvpGDiff = new BandViewProperties(properties.comparableImageProperty(), properties.selectedGreenProperty());
 		BandViewProperties bvpBDiff = new BandViewProperties(properties.comparableImageProperty(), properties.selectedBlueProperty());
 		PixelViewProperties pvpOrig = new PixelViewProperties(properties.originalImageProperty(), properties);
-		PixelViewProperties pvpComp = new PixelViewProperties(properties.originalImageProperty(), properties);
-		PixelViewProperties pvpDiff = new PixelViewProperties(properties.originalImageProperty(), properties);
+		PixelViewProperties pvpComp = new PixelViewProperties(properties.compressedImageProperty(), properties);
+		PixelViewProperties pvpDiff = new PixelViewProperties(properties.comparableImageProperty(), properties);
 		
 		DynamicRangeController dynRangeControllerOrig = new DynamicRangeController(bvpROrig, bvpGOrig, bvpBOrig);
 		DynamicRangeController dynRangeControllerComp = new DynamicRangeController(bvpRComp, bvpGComp, bvpBComp);
